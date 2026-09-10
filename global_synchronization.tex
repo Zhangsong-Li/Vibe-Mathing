@@ -1,0 +1,273 @@
+\documentclass[11pt,reqno]{amsart}
+\usepackage[tt=false]{libertine}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage[varbb]{newpxmath}
+\usepackage[foot]{amsaddr}
+
+
+\let\savedbigtimes\bigtimes
+\let\bigtimes\relax
+\usepackage{mathabx}
+\let\bigtimes\savedbigtimes
+
+\usepackage[margin=1in, bottom=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{comment}
+\usepackage{bbm}
+
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage[colorlinks=true,
+  linkcolor=teal!60!black,
+  citecolor=PineGreen,
+  urlcolor=RedViolet]{hyperref}
+\hypersetup{bookmarksopen=true}
+
+\usepackage[yyyymmdd,hhmmss]{datetime}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,calligraphy}
+\usetikzlibrary{calc}
+
+\linespread{1.1}
+
+\raggedbottom
+
+% define theorem environments, commands, etc here
+\input{./commands}
+
+% for comments
+\newcommand{\TODO}[1]{\noindent\textup{\textsf{\color{red}[Todo: #1]}}}
+
+% macros
+\def\de{{\mathsf{d}}}
+\def\ker{{\mathsf{ker}}}
+\def\diag{{\mathsf{diag}}}
+\def\TT{{\mathsf{T}}}
+
+\title{Random $3$-Regular Graphs Are not Globally Synchronizing}
+
+\author{}
+
+\address[]{}
+\email[]{}
+
+\date{\today}
+
+\begin{document}
+
+\begin{abstract}
+    We prove that for a uniform random $3$-regular graph $G$ on $n$ vertices, the probability that $G$ is globally synchronizing tends to $0$ as $n \to \infty$. This refutes \cite[Conjecture~3]{bandeira2026randomstrasse101} in a strong form.
+    The main result of this paper was obtained using GPT6-Astra.
+\end{abstract}
+
+\maketitle
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+
+\section{Introduction and main results}
+\label{s:intro}
+
+In this short note, we will focus on spontaneous synchronization of  coupled oscillators with pairwise connections given by a graph with adjacency matrix $A \in \bbR^{n \times n}$. The celebrated Kuramoto model \cite{kuramoto2005self} models the oscillators as gradient flow on
+\begin{equation}{\label{eq:energy}}
+    \cE(\theta) = \frac{1}{2} \sum_{i,j=1}^{n} A_{i,j}(1-\cos(\theta_i-\theta_j))
+\end{equation}
+where the parameterization $\theta\in[0,2\pi)^n$ represents each oscillators angle in the moving frame of its natural frequency. For the detailed derivation of this potential, see, e.g. \cite{abdalla2026expander}. This motivates the following Definition which is central to what follows. We say $A$ is globally synchronizing if the only local minima of $\mathcal E(\theta)$ are the global minima corresponding to $\theta_i=c,\forall i$. A graph $G$ is said to be globally synchronizing if its adjacency matrix is globally synchronizing.
+
+\cite{abdalla2026expander} recently showed that a random Erd\H{o}s-R\'enyi graph is globally synchronizing above the connectivity threshold with high probability; The same paper also shows that a uniform $d$-regular graph is globally synchronizing with high probability for $d \ge 600$, but it leaves open the following question.
+\begin{conj}{\label{conj:main}}
+    For even $n$, denote by $\mathcal G_3(n)$ the uniform measure over all $3$-regular graphs on $n$ vertices. Then for $G \sim \mathcal G_3(n)$, we have 
+    \begin{align*}
+        \lim_{n \to\infty} \bbP(G \textup{ is globally synchronizing}) =1 \,.
+    \end{align*}
+\end{conj}
+The goal of this short note is to refute Conjecture~\ref{conj:main} in a strong form.
+\begin{thm}\label{thm:main}
+    Let $G$ be uniform among the simple $3$-regular graphs on $[n]$, with $n$ even. Then
+    \[
+    \lim_{n \to\infty} \bbP(G \textup{ is globally synchronizing}) = 0 \,.
+    \]
+\end{thm}
+Our obstruction actually only relies two ingredient from the random regular graph: a spectral gap estimate and the Poisson limit of small cycles. Precisely, let $\cL_G=3I_n-A$ be the ordinary, unnormalized Laplacian of a $3$-regular graph $G=(V,E)$, and write
+\begin{equation}{\label{eq:second-eigen}}
+    \lambda_2(\cL_G)=\min_{\substack{x\perp\mathbf 1\\x\ne0}} \frac{\sum_{\{u,v\}\in E}(x_u-x_v)^2}{\sum_{v\in V}x_v^2} \,.
+\end{equation}
+In addition, for a cycle $C$, let $\cB_R(C)$ be the subgraph induced by all vertices at graph distance at most $R$ from $C$. We say that $C$ has a \emph{clean radius-$R$ neighborhood} if $\cB_R(C)$ is a cycle with disjoint outward trees attached, with no other cycle or chord. Since $G$ is $3$-regular, there is one vertex in each outward branch at level $1$, two at level $2$, and $2^{k-1}$ at level $k\ge1$. In particular, for a cycle of length $\ell$, level $k$ has exactly $\ell2^{k-1}$ vertices.
+\begin{prop}\label{prop:obstruction}
+For every $\gamma>0$ and every $\ell\ge4$ divisible by four, there is a finite integer $R=R(\ell,\gamma)$ with the following property. If a simple cubic graph $G$ satisfies $\lambda_2(\cL_G)\ge\gamma$ and contains an $\ell$-cycle with a clean radius-$R$ neighborhood, then $\cE(\theta)$ has a nonsynchronous strict local minimum modulo rotations. Every edge cosine at this local minimum is bounded below by a positive absolute constant.
+\end{prop}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main} using Proposition~\ref{prop:obstruction}]
+    By \cite{friedman2008proof, bordenave2015new}, $\lambda_2(\cL_G) \le 2\sqrt{2}+\epsilon \to 1$ for any $\epsilon>0$. By \cite{friedman2008proof}, the graph $G$ has no $(\epsilon \log n)$-tangles for sufficiently small constant $\epsilon$. By \cite{mckay2004short}, the number of $\ell$-cycles in $G$ converge in distribution to $\mathsf{Pois}(\frac{2^\ell}{2\ell})$. Thus, $G$ contains an $\ell$-cycle with a clean radius-$R$ neighborhood with probability $1-o(1)$, and therefore satisfies the assumption in Proposition~\ref{prop:obstruction}. Theorem~\ref{thm:main} then immediately follows.
+\end{proof}
+
+\section{Proof of Proposition~\ref{prop:obstruction}}
+
+The rest part of the note is devoted to the proof of Proposition~\ref{prop:obstruction}. We first need a specific construction for frequencies in a binary tree. For $0\le t\le\pi/2$, define
+\[
+    F(t)=3t+2\sum_{j=1}^{\infty}\arcsin(2^{-j}\sin t).
+\]
+The inverse sine always takes values in $[-\pi/2,\pi/2]$.
+
+\begin{lem}\label{lem:profile}
+There is a unique $\delta\in(\pi/3,\pi/2)$ such that $F(\delta)=2\pi$. Put $f=\sin\delta$ and, for every integer $k\ge0$, set
+\[
+    a_k=\sum_{j=k}^{\infty}\arcsin(2^{-j}f).
+\]
+Then
+\begin{equation}\label{eq:profile}
+    2a_0+\delta=2\pi,\qquad a_k-a_{k+1}=\arcsin(2^{-k}f),\qquad 0<a_k\le\pi 2^{-k} \,.
+\end{equation}
+In particular, $a_0=\pi-\delta/2$ and $a_R<\delta$ whenever $R\ge2$.
+\end{lem}
+\begin{proof}
+For $0\le x\le1$, convexity of $\arcsin x$ gives $\arcsin x\le\pi x/2$. Hence the series defining $F$ converges uniformly on $[0,\pi/2]$. The function is continuous and strictly increasing, because $3t$ is strictly increasing and every term in the series is nondecreasing. Moreover, $F(0)=0$, whereas
+\[
+ F(\pi/2)=\frac{3\pi}{2}
+       +2\sum_{j=1}^{\infty}\arcsin(2^{-j})
+ >\frac{3\pi}{2}+2>2\pi.
+\]
+Here we used $\arcsin x>x$ for $x>0$ and $\pi<4$. The intermediate value theorem and strict monotonicity give a unique root $\delta\in(0,\pi/2)$.
+Also,
+\[
+ F(\pi/3)
+ \le \pi+\pi\sin(\pi/3)
+ =\pi\left(1+\frac{\sqrt3}{2}\right)<2\pi,
+\]
+so $\delta>\pi/3$.
+The first identity in \eqref{eq:profile} follows from $F(\delta)=2\pi$, and the second is telescoping. Finally,
+\[
+ a_k\le\frac\pi2 f\sum_{j=k}^{\infty}2^{-j}
+ =\pi f2^{-k}\le\pi2^{-k}.
+\]
+For $R\ge2$, this yields $a_R\le\pi/4<\delta$.
+\end{proof}
+To understand the construction, consider a cycle vertex with phase $a_0$. Give its two cycle neighbors phases $a_0$ and $-a_0$, and give its outward neighbor phase $a_1$. The three contributions to its gradient are
+\[
+ 0,\qquad \sin(2a_0)=-f,\qquad
+ \sin(a_0-a_1)=f.
+\]
+They cancel. On a binary branch, a vertex at level $k\ge1$ with phase $a_k$ has a parent at $a_{k-1}$ and two children at $a_{k+1}$. Its gradient is
+\[
+ -2^{-(k-1)}f+2\cdot 2^{-k}f=0.
+\]
+The profile with all signs reversed satisfies the same equations. The principal phase difference on an opposite-sign cycle edge is $\delta$, not $2a_0$: indeed $2a_0=2\pi-\delta$. 
+
+We now finish the proof of Proposition~\ref{prop:obstruction}.
+\begin{proof}[Proof of Proposition~\ref{prop:obstruction}]
+Let $\delta,f,(a_k)$ be as in Lemma~\ref{lem:profile}. Define the absolute constants
+\[
+ \eta=\frac\pi2-\delta,\qquad
+ \rho=\frac\eta4,\qquad
+ w=\cos(\delta+2\rho)=\sin(\eta/2)>0.
+\]
+Choose an integer $R\ge2$ so large that
+\begin{equation}\label{eq:Rchoice}
+ 9\sqrt\ell\,2^{-R/2}\le\frac{w\gamma\rho}{4}.
+\end{equation}
+This choice depends on $\ell$ and $\gamma$, but not on $n$. The proof follows the following steps.
+
+\smallskip
+\emph{The approximate phase vector.}
+List the cycle vertices as $v_0,\ldots,v_{\ell-1}$ in cyclic order. Set $\sigma_i=1$ for $i\equiv0,1\pmod4$ and $\sigma_i=-1$ for $i\equiv2,3\pmod4$. Give $v_i$ phase $\sigma_i a_0$, and give every vertex at level $k\in\{1,\ldots,R\}$ in its outward tree phase $\sigma_i a_k$. Give all remaining vertices phase zero. Denote this real-valued vector by $\theta^0$; phases are interpreted modulo $2\pi$. For $s\in\bbR$, write $d_{\TT}(s,0)=\min_{q\in\mathbb Z}|s-2\pi q|$. Every edge of $G$ satisfies
+\begin{equation}\label{eq:acute}
+ d_{\TT}(\theta^0_u-\theta^0_v,0)\le\delta<\pi/2.
+\end{equation}
+Indeed, same-sign cycle edges have difference zero, and opposite-sign cycle edges have principal difference $\delta$ by \eqref{eq:profile}. An edge from level $k$ to $k+1$, for $0\le k<R$, has difference $\arcsin(2^{-k}f)\le\delta$. An edge from level $R$ to the exterior has difference $a_R<\delta$. All other edges have difference zero. The clean-neighborhood assumption excludes extra edges inside the displayed trees or between their boundary vertices.
+
+\smallskip
+\emph{An explicit Euclidean residual estimate.}
+The gradient and Hessian quadratic form are
+\begin{align*}
+ (\nabla\cE(\theta))_v
+   &=\sum_{u\sim v}\sin(\theta_v-\theta_u),\\
+ x^{\top}\nabla^2\cE(\theta)x
+   &=\sum_{\{u,v\}\in E}\cos(\theta_u-\theta_v)(x_u-x_v)^2.
+\end{align*}
+Write $g=\nabla\cE(\theta^0)$. The calculations following Lemma~\ref{lem:profile} show that $g$ vanishes on the cycle and on levels $1,\ldots,R-1$. At a level-$R$ vertex with sign $\sigma$, the two outward neighbors have phase zero, so
+\[
+ g_v=\sigma\bigl(-2^{-(R-1)}f+2\sin a_R\bigr),
+ \qquad |g_v|\le(2+2\pi)2^{-R}.
+\]
+There are $\ell2^{R-1}$ such vertices. If $v$ lies outside $B_R(C)$, let $t_v$ count its neighbors at level $R$. Then $0\le t_v\le3$, $|g_v|\le t_va_R$, and
+\[
+ \sum_{v\notin B_R(C)}t_v=\ell2^R,\qquad
+ \sum_{v\notin B_R(C)}t_v^2\le3\ell2^R.
+\]
+Consequently,
+\begin{align*}
+ \|g\|_2^2
+ \le \ell2^{R-1}(2+2\pi)^2 2^{-2R}
+       +3\ell2^R a_R^2 \le \bigl(2(1+\pi)^2+3\pi^2\bigr)\ell2^{-R}
+ <81\ell2^{-R}.
+\end{align*}
+Thus
+\begin{equation}\label{eq:residual}
+ \|g\|_2\le9\sqrt\ell\,2^{-R/2}.
+\end{equation}
+No condition has been imposed on how the exterior neighbors connect to one another, and a vertex outside the ball may be adjacent to several boundary vertices. The factor $t_v^2\le3t_v$ explicitly covers this possibility.
+
+\smallskip
+\emph{Uniform convexity in a fixed ball modulo rotation.}
+Let $\mathcal H=\{h\in\bbR^V:\langle h,\mathbf 1\rangle=0\}$ and consider $h\in\mathcal H$ with $\|h\|_2\le\rho$. For each edge, $|h_u-h_v|\le2\rho$. By \eqref{eq:acute},
+\[
+ \cos\bigl((\theta^0_u+h_u)-(\theta^0_v+h_v)\bigr)
+ \ge\cos(\delta+2\rho)=w.
+\]
+It follows that, for every $x\in\mathcal H$,
+\begin{equation}\label{eq:convexity}
+ x^{\top}\nabla^2\cE(\theta^0+h)x
+ \ge w x^{\top}\cL_Gx
+ \ge w\gamma\|x\|_2^2.
+\end{equation}
+In particular, the lower bound is independent of the graph size.
+
+\smallskip
+\emph{Existence of an exact stationary point.}
+Minimize $h\mapsto\cE(\theta^0+h)$ on the compact ball
+$\{h\in\mathcal H:\|h\|_2\le\rho\}$. Taylor's formula and \eqref{eq:convexity} imply
+\[
+ \cE(\theta^0+h)-\cE(\theta^0)
+ \ge \langle g,h\rangle+\frac{w\gamma}{2}\|h\|_2^2.
+\]
+On the boundary $\|h\|_2=\rho$, equations \eqref{eq:Rchoice} and \eqref{eq:residual} therefore give
+\[
+ \cE(\theta^0+h)-\cE(\theta^0)
+ \ge -\frac{w\gamma\rho^2}{4}
+        +\frac{w\gamma\rho^2}{2}
+ =\frac{w\gamma\rho^2}{4}>0.
+\]
+A minimizer $h^*$ is thus interior. Its gradient in directions orthogonal to $\mathbf 1$ vanishes. Since $\sum_v(\nabla\cE(\theta))_v=0$ for every $\theta$, the full gradient also vanishes at $\theta^*=\theta^0+h^*$. The Hessian estimate \eqref{eq:convexity} proves that $\theta^*$ is a strict local minimum modulo rotations. In fact the same estimate and stationarity show
+\[
+ \|h^*\|_2\le\frac{\|g\|_2}{w\gamma}\le\rho/4.
+\]
+
+\smallskip
+\emph{The stationary point is not synchronized.}
+Choose an opposite-sign cycle edge. Its principal difference at $\theta^0$ has magnitude $\delta$, and perturbation by $h^*$ changes that magnitude by at most $2\rho$. Hence at $\theta^*$ it is at least
+\[
+ \delta-2\rho=\frac{3\delta}{2}-\frac\pi4>\frac\pi4>0,
+\]
+where $\delta>\pi/3$ was used. Therefore $\theta^*$ is not constant modulo $2\pi$. As $\lambda_2(L_G)>0$, the graph is connected and its global minimum energy is zero, attained precisely by synchronized configurations. Our local minimum is not global.
+
+Finally, this construction also gives a representative in the interior of the original domain $[0,2\pi)^V$. Since $|\theta_v^0|\le a_0=\pi-\delta/2$ and $\rho<\delta/2$, adding $\pi$ to every coordinate of $\theta^*$ places all coordinates strictly between $0$ and $2\pi$. Thus the torus formulation introduces no boundary issue.
+\end{proof}
+
+
+
+
+
+
+
+
+
+\bibliographystyle{alpha}
+\bibliography{bib}
+
+\end{document}
+
+
