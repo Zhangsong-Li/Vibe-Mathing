@@ -1,0 +1,993 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=26mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools,microtype}
+\usepackage{xcolor}
+\definecolor{reviewgreen}{rgb}{0,0.42,0.18}
+\newcommand{\review}[1]{\textcolor{reviewgreen}{#1}}
+\usepackage[hidelinks,hypertexnames=false]{hyperref}
+\hypersetup{
+  pdftitle={PTF testing lower bounds for planted graphs}}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Pp}{\mathbb P}
+\newcommand{\Qq}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Inf}{\operatorname{Inf}}
+\newcommand{\Adv}{\operatorname{Adv}}
+\newcommand{\inj}{\operatorname{inj}}
+\renewcommand{\hom}{\operatorname{hom}}
+\newcommand{\1}{\mathbf 1}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\numberwithin{equation}{section}
+\title{PTF Testing Lower Bounds for Planted Subgraphs}
+\author{}
+\date{}
+\makeatletter
+\renewcommand{\maketitle}{%
+  \begin{center}
+    {\LARGE\@title\par}
+  \end{center}}
+\makeatother
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Let $\Gamma_n$ be a deterministic simple graph on at most $n$ vertices. Embed it uniformly into $G(n,1/2)$ and force its edges to be present, without prescribing any nonedges. We prove that all polynomial threshold tests of degree at most $c_\kappa\log n/\log\log n$ have vanishing distinguishing advantage if $2|E(\Gamma_n)|\le n^{1-2\kappa}$ and the maximum degree of $\Gamma_n$ is at most $n^{1/2-\kappa}$, for a fixed $0<\kappa<1/2$. One may take $c_\kappa=\min\{\kappa,1/100\}$. A more general theorem assumes only bounds on embeddings of small connected graphs, or equivalently of small trees; a degree-moment criterion is also proved. The argument gives a uniform planting-coupling estimate and then handles arbitrary coefficients and arbitrarily small threshold margins by an explicit restriction tree. All combinatorial and restriction arguments are included. The only analytic theorem invoked without proof is the Gaussian Carbery--Wright inequality.
+\end{abstract}
+
+\noindent{\bf Note.} This work was fully AI generated using GPT 6-Astra and the Codex harness, prompted by Zhangsong Li without any mathematical input.
+
+\section{Model, conditions, and main results}
+
+\subsection{Monotone edge planting}
+All graphs in this note are finite, undirected, and simple. Let $\Gamma=\Gamma_n$ be a deterministic graph with $|V(\Gamma)|\le n$, and put
+\[
+ m=|E(\Gamma)|,\qquad
+ \Delta_\Gamma=\max_{x\in V(\Gamma)}\deg_\Gamma(x),\qquad
+ E_n=\binom{[n]}2.
+\]
+The maximum degree of an edgeless graph is understood to be zero. Under the null law $\Qq_n$, the adjacency coordinates $(A_e)_{e\in E_n}$ are independent Bernoulli variables with parameter $1/2$.
+
+Under the planted law $\Pp_{\Gamma,n}$, choose a uniformly random injection $\pi:V(\Gamma)\hookrightarrow[n]$. Set $A_e=1$ for every $e\in\pi(E(\Gamma))$ and sample all other coordinates independently with parameter $1/2$. Thus this is \emph{monotone edge planting}, not induced planting: a nonedge of $\Gamma$ is not forced to be absent. Adding isolated vertices to the template does not change the distribution.
+
+For an integer $d\ge0$, define
+\[
+ \Adv_{n,\Gamma}(d)
+ =\sup_{\deg f\le d}
+ \left|\Pp_{\Gamma,n}(f(A)>0)-\Qq_n(f(A)>0)\right|.
+\]
+The supremum is over all real polynomials of the adjacency entries. In particular, coefficients may depend arbitrarily on $n$ and $\Gamma$, and no coefficient, symmetry, or margin assumption is imposed. All logarithms are natural.
+
+\begin{theorem}[Edge-count and maximum-degree criterion]\label{thm:main}
+Fix $0<\kappa<1/2$ and let $c_\kappa=\min\{\kappa,1/100\}$. Suppose that, for all sufficiently large $n$,
+\begin{equation}\tag{C}\label{cond:C}
+ 2|E(\Gamma_n)|\le n^{1-2\kappa},
+ \qquad
+ \Delta_{\Gamma_n}\le n^{1/2-\kappa}.
+\end{equation}
+If the nonnegative integers $d_n$ satisfy
+\[
+ d_n\le c_\kappa\frac{\log n}{\log\log n},
+\]
+then $\Adv_{n,\Gamma_n}(d_n)\to0$. The convergence is uniform over all templates satisfying \eqref{cond:C} and all test polynomials in the displayed degree range.
+\end{theorem}
+
+\subsection{A small-pattern embedding condition}
+For a graph $H$, define
+\[
+ \inj(H,\Gamma)
+ =\#\left\{\phi:V(H)\hookrightarrow V(\Gamma):
+       \{\phi(u),\phi(v)\}\in E(\Gamma)
+       \text{ for every }\{u,v\}\in E(H)\right\}.
+\]
+These are injective edge-preserving maps; they are not divided by automorphisms. Nonedges need not be preserved. The notation $\hom(H,\Gamma)$ denotes the analogous number of edge-preserving maps without the injectivity requirement.
+
+\begin{theorem}[Embedding-count criterion]\label{thm:embedding}
+Fix $0<\kappa<1/2$ and $c_\kappa=\min\{\kappa,1/100\}$. Let $d=d_n\ge1$ satisfy $d\le c_\kappa\log n/\log\log n$. Suppose that, for all sufficiently large $n$,
+\begin{equation}\tag{E}\label{cond:E}
+ \inj(H,\Gamma_n)\le n^{(1/2-\kappa)|V(H)|}
+ \quad\text{for every connected }H
+ \text{ with }1\le |E(H)|\le2d.
+\end{equation}
+Then $\Adv_{n,\Gamma_n}(d_n)\to0$, uniformly over the indicated templates and polynomials. It is equivalent to require \eqref{cond:E} only for trees with between one and $2d$ edges.
+\end{theorem}
+
+\begin{corollary}[Degree-moment criterion]\label{cor:moments}
+The conclusion of Theorem~\ref{thm:embedding} holds if, instead of \eqref{cond:E}, one assumes
+\begin{equation}\tag{M}\label{cond:M}
+ \sum_{x\in V(\Gamma_n)}\deg_{\Gamma_n}(x)^t
+ \le n^{(t+1)(1/2-\kappa)}
+ \qquad\text{for every integer }1\le t\le2d_n.
+\end{equation}
+\end{corollary}
+
+The cases $d_n=0$ and $E(\Gamma_n)=\varnothing$ have zero advantage and require no proof. They may be removed from any sequence when establishing convergence. We prove the implication
+\[
+ \eqref{cond:C}\ \Longrightarrow\ \eqref{cond:M}
+ \ \Longrightarrow\ \eqref{cond:E}
+\]
+next, as well as a direct proof that \eqref{cond:C} implies \eqref{cond:E}. The proof of Theorem~\ref{thm:embedding} will then complete all three results.
+
+\subsection{Proof strategy}
+In Rademacher coordinates $X_e=2A_e-1$, planting independently chooses an edge set $I=\pi(E(\Gamma))$ and overwrites its coordinates by $+1$. The embedding assumption bounds $\Pr(U\subseteq I)$ for every small edge set $U$. A weighted Fourier-matrix argument converts those bounds into
+\[
+ \E[(f(Y)-f(X))^2]\le n^{-4\kappa+o(1)}\Var(f(X)).
+\]
+This estimate controls polynomial values, but not signs near zero. We therefore construct a coordinate decision tree whose actual restricted polynomial is, at most leaves, either regular or dominated by its constant term. A regular leaf is handled by a proved Boolean small-ball estimate; a mean-dominated leaf is handled by the coupling and Chebyshev's inequality. The depth is $\exp(O_\eta(d\log d))$, and the planting avoids the queried coordinates with high probability in the stated degree range. The conditioning at a leaf is described explicitly; no conditioning on the planting avoiding that leaf is used.
+
+
+\subsection{Related work and scope}
+The distinction between polynomial-value separation and polynomial threshold testing is essential here. In the same monotone planted-subgraph model, Yu, Zadik, and Zhang~\cite{YZZ} characterize constant-degree polynomial \emph{strong separation}, in which the difference of means dominates both standard deviations, and show that signed star counts are optimal for that criterion. Their degree-profile characterization motivates comparison with \eqref{cond:M}. The conclusion proved here is different: throughout our sufficient parameter range, even the acceptance-probability advantage of an arbitrary polynomial threshold test tends to zero, and the permitted degree grows with $n$. We do not claim a complete characterization of PTF testing for all templates.
+
+Hsieh, Kane, Kothari, Li, Mohanty, and Tiegel~\cite{HKKLMT} obtain rigorous consequences of low-degree likelihood-ratio bounds for noisy distributions, including fully permutation-symmetric Boolean vectors and specified classes of Gaussian polynomial statistics. Those results do not directly give the theorem here for unsmoothed Boolean graph data and arbitrary test polynomials. In particular, vertex-permutation invariance of a random graph is weaker than invariance under all permutations of its edge coordinates. Diakonikolas, Kane, Liu, and Pittas~\cite{DKLP} establish PTF testing lower bounds for non-Gaussian component analysis and related problems; their discussion identifies planted clique as a separate direction not covered by their results.
+
+The regularity framework and Gaussian anti-concentration input used below are established tools~\cite{DSTW,CW}. The role of the present argument is to combine an explicit graph-mask coupling estimate with a transfer statement for the \emph{actual} restricted polynomial, retaining uniformity in all coefficients and threshold margins. This is a model-specific sufficient theorem, not a general implication from low-degree moment indistinguishability to PTF indistinguishability, and not a lower bound against all polynomial-time algorithms.
+
+\section{From graph structure to small-pattern containment}
+
+\subsection{The graph-theoretic implications}
+\begin{lemma}[Connected embeddings from edges and degrees]\label{lem:edge-degree}
+For every connected graph $H$ with $v\ge2$ vertices and every template $\Gamma$ with $m\ge1$,
+\[
+ \inj(H,\Gamma)\le2m\,\Delta_\Gamma^{v-2}.
+\]
+Consequently, \eqref{cond:C} implies \eqref{cond:E} for every degree cutoff $d$.
+\end{lemma}
+\begin{proof}
+Choose a spanning tree of $H$, distinguish an edge of that tree, and order all remaining vertices so that the parent of each precedes it. There are $2m$ choices for the ordered image of the distinguished edge. Each subsequent vertex has at most $\Delta_\Gamma$ possible images adjacent to its already mapped parent. Ignoring the remaining edges of $H$ and ignoring collisions can only enlarge the count. This proves the bound. Under \eqref{cond:C},
+\[
+ 2m\,\Delta_\Gamma^{v-2}
+ \le n^{1-2\kappa}n^{(1/2-\kappa)(v-2)}
+ =n^{(1/2-\kappa)v}.
+\]
+For an edgeless template, $\inj(H,\Gamma)=0$, so \eqref{cond:E} holds directly.
+\end{proof}
+
+If the embedding bound holds for all connected $H$ in \eqref{cond:E}, it holds for the stated trees. Conversely, choose a spanning tree $T$ of a connected $H$ with at most $2d$ edges. It has the same vertex set, between one and $2d$ edges, and $\inj(H,\Gamma)\le\inj(T,\Gamma)$. This proves the equivalence asserted in Theorem~\ref{thm:embedding}.
+
+\begin{lemma}[Tree homomorphisms from degree moments]\label{lem:tree-moments}
+If $T$ is a tree with $t\ge1$ edges, then
+\begin{equation}\label{eq:tree-hom}
+ \hom(T,\Gamma)\le\sum_{x\in V(\Gamma)}\deg_\Gamma(x)^t.
+\end{equation}
+Thus \eqref{cond:M} implies \eqref{cond:E}, and \eqref{cond:C} implies \eqref{cond:M}.
+\end{lemma}
+\begin{proof}
+An edgeless template gives zero on both sides. Suppose $m>0$, and write $d_\Gamma(x)=\deg_\Gamma(x)$ for this proof. If $t=1$, both sides of \eqref{eq:tree-hom} equal $2m$.
+
+Suppose $t\ge2$. Root $T$ at a vertex $o$. Draw its image $Z_o$ from the distribution
+\[
+ \nu(x)=\frac{d_\Gamma(x)}{2m}.
+\]
+For each child, independently conditional on all previously sampled vertices, draw its image uniformly among the neighbors of its parent's image. This constructs a random homomorphism $Z$ from $T$ into $\Gamma$. All sampled images have positive degree. Moreover, every $Z_u$ has marginal law $\nu$: if its parent has law $\nu$, then
+\[
+ \Pr(Z_u=y)=\sum_{x:\{x,y\}\in E(\Gamma)}
+       \frac{d_\Gamma(x)}{2m}\frac1{d_\Gamma(x)}
+       =\frac{d_\Gamma(y)}{2m}.
+\]
+For $u\in V(T)$, put $a_u=\deg_T(u)-1$. These numbers are nonnegative and sum to $t-1$. For a fixed homomorphism $\phi$, multiplication of the sampling probabilities gives
+\[
+ \Pr(Z=\phi)=\frac1{2m}
+       \prod_{u\in V(T)}d_\Gamma(\phi(u))^{-a_u}.
+\]
+At the root, its initial degree factor cancels one of its child-choice denominators; at any other vertex, its number of children is $a_u$. Therefore
+\[
+ \hom(T,\Gamma)=2m\,\E\prod_{u\in V(T)}d_\Gamma(Z_u)^{a_u}.
+\]
+H\"older's inequality, with exponents $(t-1)/a_u$ for the positive $a_u$, gives
+\begin{align*}
+ \E\prod_u d_\Gamma(Z_u)^{a_u}
+ &\le\prod_{u:a_u>0}
+       \left(\E d_\Gamma(Z_u)^{t-1}\right)^{a_u/(t-1)}\\
+ &=\frac1{2m}\sum_xd_\Gamma(x)^t.
+\end{align*}
+Independence of the different $Z_u$ is not needed for this application of H\"older. This proves \eqref{eq:tree-hom}.
+
+For a connected $H$, take a spanning tree $T$ with $t=|V(H)|-1$ edges. If $1\le|E(H)|\le2d$, then $1\le t\le2d$, and
+\[
+ \inj(H,\Gamma)\le\hom(T,\Gamma)
+ \le\sum_xd_\Gamma(x)^t
+ \le n^{(t+1)(1/2-\kappa)}
+ =n^{(1/2-\kappa)|V(H)|}.
+\]
+Finally,
+\[
+ \sum_xd_\Gamma(x)^t
+ \le\Delta_\Gamma^{t-1}\sum_xd_\Gamma(x)
+ =2m\,\Delta_\Gamma^{t-1}
+ \le n^{(t+1)(1/2-\kappa)}
+\]
+under \eqref{cond:C}. If $\Gamma$ is edgeless, the same conclusion follows directly, without any convention involving $0^0$.
+\end{proof}
+
+\subsection{The planting mask and its containment probabilities}
+Let $X=(X_e)_{e\in E_n}$ be independent uniform signs. Independently choose the uniform injection $\pi$, set $I=\pi(E(\Gamma))$, and put
+\begin{equation}\label{eq:plant}
+ Y_e=\begin{cases}1,&e\in I,\\X_e,&e\notin I.\end{cases}
+\end{equation}
+Thus $X$ has the null law in Rademacher coordinates and $Y$ has the planted law. The affine change from adjacency entries to signs preserves the degree bound; replacing $X_e^2$ by $1$ multilinearizes any polynomial without changing its values on either input.
+
+For an edge set $U\subseteq E_n$, let $V(U)$ be its incident vertex set, $v(U)=|V(U)|$, and let $H_U=(V(U),U)$. In particular, $H_U$ has no isolated vertices. Set $v(\varnothing)=0$, and define $(n)_v=n(n-1)\cdots(n-v+1)$, with $(n)_0=1$.
+
+\begin{lemma}[Containment identity and bound]\label{lem:containment}
+For every nonempty $U\subseteq E_n$,
+\begin{equation}\label{eq:embedding-probability}
+ \Pr(U\subseteq I)=\frac{\inj(H_U,\Gamma)}{(n)_{v(U)}}.
+\end{equation}
+If \eqref{cond:E} holds and $n\ge8d$, then, for $r=2n^{-\kappa}$,
+\begin{equation}\label{eq:mask-domination}
+ \Pr(U\subseteq I)\le\left(\frac r{\sqrt n}\right)^{v(U)}
+ \qquad(1\le|U|\le2d).
+\end{equation}
+Under the same embedding assumption, for every edge $e\in E_n$,
+\begin{equation}\label{eq:alpha-graph}
+ \alpha:=\Pr(e\in I)=\frac{2m}{n(n-1)}
+ \le\frac{n^{-1-2\kappa}}{1-1/n}.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Pad $\Gamma$ with isolated vertices to obtain a graph on $[n]$, and apply a uniformly random permutation. Its restriction to the original vertices is a uniform injection, so the resulting planted mask has the prescribed law. The inverse images of the specified vertices $V(U)$ form a uniform injection into $[n]$, with $(n)_{v(U)}$ possible values. Since $H_U$ has no isolated vertices, no edge-preserving map can use an added isolated vertex. Thus exactly $\inj(H_U,\Gamma)$ of these injections preserve the edges of $U$, proving \eqref{eq:embedding-probability}.
+
+Let $H_1,\ldots,H_\ell$ be the connected components of $H_U$. The restriction of an injection on $H_U$ gives an injection on each component; allowing images from distinct components to intersect only enlarges the number. Hence
+\[
+ \inj(H_U,\Gamma)\le\prod_{j=1}^{\ell}\inj(H_j,\Gamma).
+\]
+For $1\le|U|\le2d$, each component has between one and $2d$ edges. By \eqref{cond:E}, the last product is at most $n^{(1/2-\kappa)v(U)}$. Also $v(U)\le2|U|\le4d\le n/2$, so every factor of $(n)_{v(U)}$ is at least $n/2$. Substituting in \eqref{eq:embedding-probability} gives
+\[
+ \Pr(U\subseteq I)
+ \le\frac{n^{(1/2-\kappa)v(U)}}{(n/2)^{v(U)}}
+ =\left(2n^{-1/2-\kappa}\right)^{v(U)},
+\]
+which is \eqref{eq:mask-domination}.
+
+Finally, $\inj(K_2,\Gamma)=2m$. Apply \eqref{eq:embedding-probability} to a single edge, and use \eqref{cond:E} for $H=K_2$, to obtain \eqref{eq:alpha-graph}.
+\end{proof}
+
+\section{Fourier preliminaries and exact restriction identities}
+
+We first give notation and two elementary ingredients on a generic cube $\{-1,1\}^M$. A multilinear polynomial has a unique expansion
+\[
+ f(x)=\sum_{S\subseteq[M]}a_S\chi_S(x),\qquad
+ \chi_S(x)=\prod_{i\in S}x_i,
+\]
+where $a_S=0$ for $|S|>d$. Empty products equal one. Orthogonality gives
+\begin{equation}\label{eq:parseval}
+ \E f(X)=a_\varnothing,\qquad
+ \E f(X)^2=\sum_Sa_S^2,\qquad
+ \Var(f(X))=\sum_{S\ne\varnothing}a_S^2.
+\end{equation}
+These identities also hold for independent coordinates each of which is either a Rademacher or a standard Gaussian: distinct multilinear monomials are orthogonal, and every such monomial has squared norm one.
+
+Define the coordinate and total influences by
+\[
+ \Inf_i(f)=\sum_{S\ni i}a_S^2,\qquad
+ \Inf(f)=\sum_i\Inf_i(f)=\sum_{S\ne\varnothing}|S|a_S^2.
+\]
+Consequently,
+\begin{equation}\label{eq:total-inf}
+ \Var(f)\le\Inf(f)\le d\Var(f).
+\end{equation}
+A nonconstant polynomial is \emph{$\tau$-regular} if
+\[
+ \max_i\Inf_i(f)\le\tau\Inf(f).
+\]
+This is a condition on the polynomial representation itself, not just its threshold function.
+
+\subsection{A fourth-moment bound, including mixed inputs}
+
+\begin{lemma}\label{lem:fourth}
+Let $Z_1,\ldots,Z_m$ be independent, each either Rademacher or standard Gaussian. For every multilinear $g(z)=\sum_Sb_S\chi_S(z)$,
+\[
+ \|g(Z)\|_4^2\le\sum_S3^{|S|}b_S^2.
+\]
+In particular, if $\deg g\le d$, then
+\begin{equation}\label{eq:fourth}
+ \|g(Z)\|_4\le3^{d/2}\|g(Z)\|_2.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Induct on the number of coordinates. For zero coordinates the assertion is an equality. Write $g(z)=a(z_1,\ldots,z_{m-1})+z_m b(z_1,\ldots,z_{m-1})$. Both types of coordinate have first and third moments zero, second moment one, and fourth moment at most three. Conditional on the other coordinates,
+\[
+ \E_{Z_m}g(Z)^4
+ \le a^4+6a^2b^2+3b^4
+ \le(a^2+3b^2)^2.
+\]
+Taking expectation over the remaining coordinates and applying the triangle inequality in $L^2$ gives
+\[
+ \|g\|_4^2\le\|a^2+3b^2\|_2
+ \le\|a\|_4^2+3\|b\|_4^2.
+\]
+Apply the induction hypothesis to $a$ and $b$. The extra factor three for $b$ accounts exactly for the presence of coordinate $m$ in its monomials. This proves the weighted bound. Finally, $3^{|S|}\le3^d$ and \eqref{eq:parseval} imply \eqref{eq:fourth}.
+\end{proof}
+
+We will also use the elementary Paley--Zygmund estimate
+\begin{equation}\label{eq:pz}
+ \Pr\bigl(W\ge\tfrac12\E W\bigr)
+ \ge\frac{(\E W)^2}{4\E W^2},\qquad W\ge0,\quad\E W>0.
+\end{equation}
+Indeed, the expectation of $W$ on this event is at least $\E W/2$, and Cauchy--Schwarz bounds that expectation by $(\E W^2)^{1/2}$ times the square root of the event probability.
+
+\subsection{Exact identities under coordinate restrictions}
+
+Let $H\subseteq[M]$ be a set of queried coordinates, and assign them a uniform vector $\rho\in\{-1,1\}^H$. Write $p_\rho(x)=f(\rho,x)$ for the actual restricted polynomial on $H^c$. Its coefficient of $\chi_T$, for $T\subseteq H^c$, is
+\begin{equation}\label{eq:restricted-coeff}
+ b_T(\rho)=\sum_{R\subseteq H}a_{R\cup T}\chi_R(\rho).
+\end{equation}
+Thus $\deg b_T\le d-|T|$ whenever it is nonzero, and
+\[
+ \E_\rho b_T(\rho)^2=\sum_{R\subseteq H}a_{R\cup T}^2.
+\]
+For $j\notin H$, summing this identity over $T\ni j$ yields
+\begin{equation}\label{eq:restricted-inf}
+ \E_\rho\Inf_j(p_\rho)=\Inf_j(f).
+\end{equation}
+Writing $\mu(\rho)=\E[p_\rho]$ and $V(\rho)=\Var(p_\rho)$, we also obtain
+\begin{align}
+ \E_\rho V(\rho)
+ &=\sum_{S:S\cap H^c\ne\varnothing}a_S^2
+ \le\sum_{j\notin H}\Inf_j(f),\label{eq:restricted-var}\\
+ \E_\rho\mu(\rho)^2+\E_\rho V(\rho)
+ &=\E f(X)^2.\label{eq:restricted-norm}
+\end{align}
+All means and variances at a fixed restriction are with respect to independent uniform values of the unqueried coordinates.
+
+\section{A uniform coupling bound for general planted masks}
+
+In this section $I$ may be \emph{any} random subset of $E_n$ independent of $X$. No symmetry or clique assumption on its law is made. We assume only the containment estimate specified below and use the overwriting rule \eqref{eq:plant}.
+
+\begin{lemma}[Elementary graph count]\label{lem:count}
+For all integers $d\ge1$ and $v\ge1$, the number of graphs on a specified $v$-vertex set with at most $2d$ edges is at most $e^{2v\sqrt d}$.
+\end{lemma}
+\begin{proof}
+Put $M=\binom v2$. If $v\le4\sqrt d$, count all graphs:
+\[
+ 2^M\le\exp\bigl((\log2)v^2/2\bigr)\le e^{2v\sqrt d}.
+\]
+If $v>4\sqrt d$, then $2d<M/2$. For $1\le\ell\le M/2$ put $z=\ell/M$. Since $z\le1/2$, all binomial probability weights $z^j(1-z)^{M-j}$ with $j\le\ell$ are at least $z^\ell(1-z)^{M-\ell}$. Thus
+\[
+ \sum_{j=0}^{\ell}\binom Mj
+ \le z^{-\ell}(1-z)^{-(M-\ell)}
+ \le(eM/\ell)^\ell,
+\]
+using $-(1-z)\log(1-z)\le z$. With $\ell=2d$ and $w=v/(2\sqrt d)>2$, the logarithm of this bound is at most
+\[
+ 2d\log\frac{ev^2}{4d}=2d(1+2\log w)\le4dw=2v\sqrt d.
+\]
+The last inequality follows from $1+2\log w\le2w$ for $w\ge2$.
+\end{proof}
+
+\begin{theorem}[General planting-coupling bound]\label{thm:coupling}
+Let $d\ge1$, let $r\ge n^{-1/2}$, and suppose that $I$ is independent of the uniform Rademacher vector $X$ and satisfies
+\begin{equation}\label{eq:general-mask}
+ \Pr(U\subseteq I)\le\left(\frac r{\sqrt n}\right)^{v(U)}
+ \qquad\text{for every nonempty }U\subseteq E_n
+ \text{ with }|U|\le2d.
+\end{equation}
+Set
+\[
+ B_d=4(d+1)e^{2\sqrt d},\qquad
+ A_d=8(d+1)B_d^4=2048(d+1)^5e^{8\sqrt d}.
+\]
+If $B_dr\le1/2$, then every polynomial $f$ of degree at most $d$ satisfies
+\begin{equation}\label{eq:coupling}
+ \E[(f(Y)-f(X))^2]\le A_dr^4\Var(f(X)).
+\end{equation}
+\end{theorem}
+\begin{proof}
+Multilinearize $f$ and write $f=\sum_{|S|\le d}a_S\chi_S$. Define the symmetric matrix
+\[
+ N_{S,T}=\E[(\chi_S(Y)-\chi_S(X))(\chi_T(Y)-\chi_T(X))].
+\]
+Then the left side of \eqref{eq:coupling} equals $a^\top Na$. We prove a weighted row-sum bound for $N$.
+
+\paragraph{Step 1: compute all types of entries.}
+For a fixed mask, $\chi_S(Y)=\chi_{S\setminus I}(X)$. Orthogonality gives
+\begin{align*}
+ \E_X[\chi_S(Y)\chi_T(Y)]&=\1_{\{S\triangle T\subseteq I\}},\\
+ \E_X[\chi_S(Y)\chi_T(X)]&=\1_{\{S\setminus I=T\}},\\
+ \E_X[\chi_S(X)\chi_T(Y)]&=\1_{\{T\setminus I=S\}},\\
+ \E_X[\chi_S(X)\chi_T(X)]&=\1_{\{S=T\}}.
+\end{align*}
+Consequently,
+\begin{equation}\label{eq:N-diag}
+ N_{S,S}=2\Pr(S\cap I\ne\varnothing).
+\end{equation}
+If neither $S\subseteq T$ nor $T\subseteq S$, the two mixed indicators vanish, and
+\begin{equation}\label{eq:N-inc}
+ N_{S,T}=\Pr(S\triangle T\subseteq I).
+\end{equation}
+If $T\subsetneq S$, then $\{S\setminus I=T\}$ is the intersection of $\{S\setminus T\subseteq I\}$ with $\{T\cap I=\varnothing\}$. Thus
+\begin{equation}\label{eq:N-nested}
+ N_{S,T}=\Pr(S\setminus T\subseteq I,\ T\cap I\ne\varnothing).
+\end{equation}
+The remaining nested case follows by symmetry. Every entry of $N$ is nonnegative. Its row and column indexed by $\varnothing$ vanish.
+
+\paragraph{Step 2: a weighted counting rule.}
+Let $w_S=n^{-v(S)/2}$. Fix a nonempty $S$ and write, for a possible $T$,
+\[
+ a=|V(S)\setminus V(T)|,\qquad
+ b=|V(T)\setminus V(S)|.
+\]
+Then $w_T/w_S=n^{(a-b)/2}$. Suppose an auxiliary edge set $H$ uniquely determines $T$, has at most $2d$ edges and $v$ incident vertices, and its vertices outside $V(S)$ are exactly the $b$ new vertices of $T$. The number of possible $H$ with a specified $b$ is at most
+\begin{equation}\label{eq:label-count}
+ n^b(2d)^{v-b}e^{2v\sqrt d}.
+\end{equation}
+Indeed, choose the new vertex labels in at most $n^b$ ways, choose the other vertices from $V(S)$ in at most $(2d)^{v-b}$ ways, and use Lemma~\ref{lem:count}. The count may include extra choices that do not define a valid $T$; this only increases the upper bound.
+
+Suppose, moreover, that all valid choices satisfy $a+b\le v-\ell$. Then \eqref{eq:general-mask} gives
+\[
+ \Pr(H\subseteq I)\frac{w_T}{w_S}
+ \le\left(\frac r{\sqrt n}\right)^v
+       n^{(v-\ell-2b)/2}
+ =n^{-b-\ell/2}r^v.
+\]
+Multiplying by \eqref{eq:label-count} and summing over $b$ gives the bound
+\begin{equation}\label{eq:count-rule}
+ n^{-\ell/2}r^ve^{2v\sqrt d}
+       \sum_{b=0}^{v}(2d)^{v-b}
+ \le n^{-\ell/2}(B_dr)^v.
+\end{equation}
+Here $\sum_{b=0}^v(2d)^{v-b}\le(v+1)(2d)^v\le[4(d+1)]^v$, because $v+1\le2^v$ for $v\ge1$. The same rule applies when an edge $e\in S$ is held fixed and $H$ determines $T$ once $e$ is specified.
+
+\paragraph{Step 3: incomparable edge sets.}
+Take $H=S\triangle T$, which determines $T=S\triangle H$ and has at most $2d$ edges. Every vertex lost from $S$ or new in $T$ is incident to $H$, so $a+b\le v(H)$. Incomparability implies that $H$ contains an edge of $S\setminus T$ and an edge of $T\setminus S$, and hence $v(H)\ge3$.
+
+If $v(H)=3$, the two edges just described share an endpoint. This endpoint is incident to $H$ and belongs to both $V(S)$ and $V(T)$. It is therefore not among the $a+b$ lost and new vertices, so $a+b\le2=v(H)-1$. Apply \eqref{eq:count-rule} with $\ell=1$ when $v=3$ and $\ell=0$ when $v\ge4$. By \eqref{eq:N-inc}, the total contribution is at most
+\begin{equation}\label{eq:inc-row}
+ n^{-1/2}(B_dr)^3+\sum_{v\ge4}(B_dr)^v
+ =B_d^3n^{-1/2}r^3+\frac{(B_dr)^4}{1-B_dr}.
+\end{equation}
+Only finite ranges of $v$ can actually occur; extending the sum to infinity is an upper bound.
+
+\paragraph{Step 4: strictly nested edge sets.}
+For either inclusion direction, \eqref{eq:N-nested} and a union bound imply
+\[
+ N_{S,T}\le\sum_{e\in S\cap T}
+       \Pr((S\triangle T)\cup\{e\}\subseteq I).
+\]
+Fix a possible common edge $e\in S$; there are at most $d$ choices. Put $H=(S\triangle T)\cup\{e\}$. For this fixed $e$, it determines
+\[
+ T=S\triangle(H\setminus\{e\}).
+\]
+The new vertices of $H$ are exactly the new vertices of $T$. Since the edge sets are strictly nested and $e$ is common, $H$ has at most $d+1\le2d$ edges. It contains at least two distinct edges, so $v(H)\ge3$. Both endpoints of $e$ belong to $V(S)\cap V(T)$ and are incident to $H$. Thus $a+b\le v(H)-2$. Apply \eqref{eq:count-rule} with $\ell=2$, and sum over $e$ and $v\ge3$. The total nested contribution is at most
+\begin{equation}\label{eq:nested-row}
+ dn^{-1}\sum_{v\ge3}(B_dr)^v
+ =\frac{dn^{-1}(B_dr)^3}{1-B_dr}.
+\end{equation}
+If the common edge set is empty, the corresponding matrix entry is zero.
+
+\paragraph{Step 5: diagonal terms and the weighted Schur estimate.}
+By \eqref{eq:N-diag}, a union bound, and the single-edge case of \eqref{eq:general-mask},
+\[
+ N_{S,S}\le2d\,r^2/n.
+\]
+Combining this with \eqref{eq:inc-row} and \eqref{eq:nested-row}, and using $B_dr\le1/2$, gives
+\begin{align*}
+ \sum_TN_{S,T}\frac{w_T}{w_S}
+ &\le2dr^2/n+B_d^3n^{-1/2}r^3
+       +2B_d^4r^4+2dB_d^3n^{-1}r^3\\
+ &\le(2d+B_d^3+2B_d^4+2dB_d^3)r^4
+ \le A_dr^4.
+\end{align*}
+Here $r\ge n^{-1/2}$ implies $r^2/n\le r^4$, $n^{-1/2}r^3\le r^4$, and $n^{-1}r^3\le r^4$.
+
+For every $S,T$,
+\[
+ 2|a_Sa_T|\le a_S^2\frac{w_T}{w_S}+a_T^2\frac{w_S}{w_T}.
+\]
+Using symmetry and entrywise nonnegativity of $N$, and omitting its zero constant row and column, we conclude
+\[
+ a^\top Na\le\sum_{S,T\ne\varnothing}N_{S,T}|a_Sa_T|
+ \le A_dr^4\sum_{S\ne\varnothing}a_S^2.
+\]
+Parseval proves \eqref{eq:coupling}.
+\end{proof}
+
+\begin{corollary}[Coupling under the graph condition]\label{cor:graph-coupling}
+Assume \eqref{cond:E}. If $n\ge8d$, $r=2n^{-\kappa}$, and $B_dr\le1/2$, then \eqref{eq:coupling} holds for the planting of $\Gamma$. In particular, for fixed $\kappa$ and $d=O(\log n)$, subject to \eqref{cond:E} at that degree,
+\[
+\E[(f(Y)-f(X))^2]
+ \le n^{-4\kappa+o(1)}\Var(f(X))
+ \qquad(\deg f\le d),
+\]
+uniformly over the templates and polynomials.
+\end{corollary}
+\begin{proof}
+Lemma~\ref{lem:containment} provides \eqref{eq:general-mask}. Since $0<\kappa<1/2$, the choice $r=2n^{-\kappa}$ satisfies $r\ge n^{-1/2}$. Apply Theorem~\ref{thm:coupling}. Finally,
+\[
+ \log A_d=O(\sqrt d+\log(d+1)),\qquad
+ \log B_d=O(\sqrt d+\log(d+1)).
+\]
+For $d=O(\log n)$ these are $o(\log n)$, so $B_dr=o(1)$ and $A_dr^4=16A_dn^{-4\kappa}\le n^{-4\kappa+o(1)}$.
+\end{proof}
+
+\begin{lemma}[Disagreement with a margin]\label{lem:margin}
+Suppose a fixed polynomial $f$ satisfies
+$\E[(f(Y)-f(X))^2]\le\delta^2\Var(f(X))$.
+If $\sigma^2=\Var(f(X))>0$, then for every $t>0$,
+\[
+\Pr\bigl(\1_{\{f(X)>0\}}\ne\1_{\{f(Y)>0\}}\bigr)
+ \le\Pr(|f(X)|\le t\sigma)+\delta^2/t^2.
+\]
+\end{lemma}
+\begin{proof}
+If $|f(X)|>t\sigma$ and $|f(Y)-f(X)|<t\sigma$, the two values have the same strict sign. Bound the complementary events by a union bound and Markov's inequality applied to the squared difference.
+\end{proof}
+
+The small-ball term cannot be omitted: a Boolean polynomial can have an atom at zero or values on arbitrarily small scales. The next two sections provide the necessary uniform treatment.
+
+\section{A decision tree for the actual restricted polynomial}
+
+Fix $d\ge1$, $0<\eta<1/10$, and $0<\tau<1$. A successful leaf will mean that its polynomial is constant, $\tau$-regular, or satisfies
+\begin{equation}\label{eq:mean-dominated}
+ \Var(p_\rho)\le\eta(\E p_\rho)^2.
+\end{equation}
+The critical-index organization follows the regularity framework of \cite{DSTW}. We prove the precise variant needed here: success must concern the actual restricted polynomial, not merely a different threshold function approximating it under the null law. A deterministic tie-breaking rule is used whenever influences are sorted.
+
+\begin{lemma}\label{lem:tree}
+Define
+\[
+ q=\frac1{4\cdot9^d},\qquad
+ \beta=\frac{\tau^2}{32\cdot81^d},\qquad
+ L=\left\lceil\beta^{-1}\log\frac{8d}{\eta q}\right\rceil,
+\]
+\[
+ R=\left\lceil\frac2q\log\frac1\eta\right\rceil,
+ \qquad h=LR.
+\]
+Every degree-at-most-$d$ polynomial on a Boolean cube admits a deterministic coordinate decision tree of depth at most $h$ such that a uniform input reaches a successful leaf with probability at least $1-\eta$. For fixed $\eta$,
+\begin{equation}\label{eq:depth}
+ \log h\le2\log(1/\tau)+O_\eta(d+\log(d+1)).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+We first show that at any current nonconstant node, at most $L$ additional queries produce success with conditional probability at least $q/2$. At a successful node no queries are needed. If at most $L$ coordinates remain, query all of them and obtain constants. Otherwise, for the estimates in this round, divide the current polynomial by its positive standard deviation, so that its variance is one. This normalization is used only in the analysis: the tree still stores the actual restrictions of the original polynomial. The choices of coordinates, regularity, \eqref{eq:mean-dominated}, and signs are invariant under this positive rescaling. Let $M$ be the number of remaining coordinates. Order the remaining coordinates so that their influences decrease. Write $J_i=\Inf_i(f)$ and
+\[
+ T_j=\sum_{i>j}J_i.
+\]
+By \eqref{eq:total-inf}, $T_0\le d$. Define the critical index $k$ as the smallest $j\in\{0,\ldots,M\}$ with
+\[
+ J_{j+1}\le\beta T_j,
+\]
+where $J_{M+1}=0$ and $T_{M}=0$. Thus the index always exists. For $j<k$, one has $J_{j+1}>\beta T_j$, hence
+\[
+ T_{j+1}=T_j-J_{j+1}<(1-\beta)T_j.
+\]
+Inductively,
+\begin{equation}\label{eq:tail-decay}
+ T_j\le d(1-\beta)^j\le de^{-\beta j},\qquad j\le k.
+\end{equation}
+
+\paragraph{Case 1: $k=0$.}
+Then $J_1\le\beta\Inf(f)$, and all other influences are no larger. Since $\beta\le\tau$, the current polynomial is already $\tau$-regular.
+
+\paragraph{Case 2: $k\ge L$.}
+Query the first $L$ coordinates and let $\rho$ denote their uniform answers. Put $\mu(\rho)=\E p_\rho$ and $V(\rho)=\Var(p_\rho)$. By \eqref{eq:restricted-var}, \eqref{eq:tail-decay}, and the definition of $L$,
+\[
+ \E_\rho V(\rho)\le T_L\le de^{-\beta L}\le\frac{\eta q}{8}.
+\]
+Because the original variance is one, \eqref{eq:restricted-norm} gives
+\[
+ \E_\rho\mu(\rho)^2
+ =1+(\E f)^2-\E_\rho V(\rho)\ge\frac12.
+\]
+The function $\mu$ is a polynomial of degree at most $d$ in $\rho$. Lemma~\ref{lem:fourth} and \eqref{eq:pz}, applied to $W=\mu^2$, yield
+\[
+ \Pr_\rho\left(\mu^2\ge\tfrac12\E_\rho\mu^2\right)
+ \ge\frac1{4\cdot9^d}=q.
+\]
+On this event, $\mu^2\ge1/4$. Markov's inequality gives
+\[
+ \Pr_\rho(V>\eta/4)\le\frac{4\E_\rho V}{\eta}\le q/2.
+\]
+The intersection therefore has probability at least $q/2$, and on it $V\le\eta/4\le\eta\mu^2$. Thus the actual restriction satisfies \eqref{eq:mean-dominated}.
+
+\paragraph{Case 3: $0<k<L$.}
+Query the first $k$ coordinates. Put $B=T_k$. If $B=0$, the polynomial depends only on those queried coordinates, and every restriction is constant. Suppose $B>0$. For $j>k$, define
+\[
+ I_j(\rho)=\Inf_j(p_\rho),\qquad Z(\rho)=\sum_{j>k}I_j(\rho).
+\]
+Identity \eqref{eq:restricted-inf} gives $\E_\rho I_j=J_j$ and $\E_\rho Z=B$. In the notation of \eqref{eq:restricted-coeff},
+\[
+ I_j=\sum_{T\ni j}b_T^2,\qquad
+ Z=\sum_{T\ne\varnothing}|T|b_T^2.
+\]
+The triangle inequality in $L^2$ and Lemma~\ref{lem:fourth} imply
+\[
+ \|I_j\|_2\le\sum_{T\ni j}\|b_T\|_4^2
+ \le3^d\sum_{T\ni j}\E b_T^2=3^dJ_j,
+\]
+and likewise $\|Z\|_2\le3^dB$. It follows from \eqref{eq:pz} that
+\[
+ \Pr_\rho(Z\ge B/2)\ge q.
+\]
+The critical-index condition and the ordering give $J_j\le\beta B$ for every $j>k$. A union bound and Markov's inequality applied to $I_j^2$ now give
+\begin{align*}
+ \Pr_\rho\left(\max_{j>k}I_j>\frac{\tau B}{2}\right)
+ &\le\frac4{\tau^2B^2}\sum_{j>k}\E_\rho I_j^2\\
+ &\le\frac{4\cdot9^d}{\tau^2B^2}\sum_{j>k}J_j^2\\
+ &\le\frac{4\cdot9^d\beta}{\tau^2}
+ =\frac1{8\cdot9^d}=\frac q2.
+\end{align*}
+Hence, with probability at least $q/2$, both $Z\ge B/2$ and $\max_jI_j\le\tau B/2$ hold. Then $\max_jI_j\le\tau Z$, so the actual restricted polynomial is $\tau$-regular.
+
+\paragraph{Iteration and depth.}
+Apply this procedure at every unsuccessful leaf, freezing every successful leaf. Repeat at most $R$ times. Conditional on any unsuccessful history, the unqueried coordinates are still independent uniform bits, so the next round succeeds with probability at least $q/2$. The unsuccessful probability after $R$ rounds is therefore at most
+\[
+ (1-q/2)^R\le e^{-qR/2}\le\eta.
+\]
+Each round queries at most $L$ coordinates along any path, proving the depth bound $h=LR$.
+
+For completeness, the quantities inside both ceilings are greater than one, so
+\[
+ h\le\left(2\beta^{-1}\log\frac{8d}{\eta q}\right)
+       \left(\frac4q\log\frac1\eta\right).
+\]
+Now $\log\beta^{-1}=2\log(1/\tau)+d\log81+\log32$, $\log q^{-1}=d\log9+\log4$, and
+\[
+ \log\log\frac{8d}{\eta q}=O_\eta(\log(d+1)).
+\]
+Taking logarithms proves \eqref{eq:depth}.
+\end{proof}
+
+\section{Small-ball estimates for regular polynomials}
+
+We use the following specialization of Carbery--Wright \cite[Theorem 8]{CW}: for a nonzero degree-at-most-$d$ polynomial $f$ and a standard Gaussian vector $G$,
+\begin{equation}\label{eq:CW}
+ \Pr\bigl(|f(G)|\le s\|f(G)\|_2\bigr)
+ \le C_{\mathrm{CW}}d\,s^{1/d},\qquad s>0,
+\end{equation}
+with an absolute constant $C_{\mathrm{CW}}$. This is obtained from their log-concave-measure inequality by taking the norm parameter to be $2d$. The same Gaussian formulation is recorded in \cite[Theorem 8]{DSTW}. No centering assumption is required.
+
+The Rademacher-to-Gaussian step needed below can be proved directly, instead of invoking a quantitative invariance theorem as a black box.
+
+\begin{lemma}[Smooth coordinate replacement]\label{lem:replacement}
+Let $X$ be uniform on $\{-1,1\}^M$, let $G$ be a standard Gaussian vector, and let $f$ be multilinear of degree at most $d$. If $\varphi\in C^4(\R)$ has bounded fourth derivative, then
+\begin{equation}\label{eq:replacement}
+ \left|\E\varphi(f(X))-\E\varphi(f(G))\right|
+ \le\frac{9^d}{6}\|\varphi^{(4)}\|_\infty
+       \sum_i\Inf_i(f)^2.
+\end{equation}
+\end{lemma}
+\begin{proof}
+Replace the coordinates one at a time. At the replacement of coordinate $i$, condition on all other coordinates, which form an independent mixture of Gaussian and Rademacher variables. Multilinearity gives $f=U+z_iV$, with $U$ and $V$ independent of $z_i$. Taylor's formula gives
+\[
+ \varphi(U+zV)=\sum_{j=0}^3\frac{\varphi^{(j)}(U)}{j!}z^jV^j+R_z,
+ \qquad |R_z|\le\frac{\|\varphi^{(4)}\|_\infty}{24}|zV|^4.
+\]
+The first three moments of a Rademacher and a standard Gaussian agree. Their fourth moments sum to four. Therefore the absolute error at this replacement is at most
+\[
+ \frac{\|\varphi^{(4)}\|_\infty}{6}\E V^4.
+\]
+The polynomial $V$ has degree at most $d-1$, and orthogonality under the mixed input gives $\E V^2=\Inf_i(f)$. Lemma~\ref{lem:fourth} implies
+\[
+ \E V^4\le9^{d-1}\Inf_i(f)^2\le9^d\Inf_i(f)^2.
+\]
+Summing the individual replacement errors proves \eqref{eq:replacement}.
+\end{proof}
+
+\begin{lemma}[Regular small-ball bound]\label{lem:smallball}
+There is an absolute $C_0\ge1$ such that every nonconstant $\tau$-regular multilinear polynomial $f$ of degree at most $d$ satisfies, for $\sigma^2=\Var(f(X))$ and every $t>0$,
+\begin{equation}\label{eq:smallball}
+ \Pr(|f(X)|\le t\sigma)
+ \le C_0d\left[t^{1/d}+(d\tau)^{1/(8d)}\right].
+\end{equation}
+\end{lemma}
+\begin{proof}
+Divide $f$ by $\sigma$, without subtracting its mean, so that its variance is one. Let $u=d\tau$. By regularity and \eqref{eq:total-inf},
+\[
+ \max_i\Inf_i(f)\le u,\qquad
+ \sum_i\Inf_i(f)\le d,\qquad
+ \sum_i\Inf_i(f)^2\le du.
+\]
+We first establish a smoothed bound. For any $s>0$, choose a smooth function $\varphi$ satisfying
+\[
+ 0\le\varphi\le1,\qquad
+ \varphi=1\text{ on }[-t,t],\qquad
+ \varphi=0\text{ outside }[-t-s,t+s],\qquad
+ \|\varphi^{(4)}\|_\infty\le C_2 s^{-4},
+\]
+where $C_2$ is absolute. To construct it, take a fixed nonnegative smooth density $\psi$ supported in $[-1/2,1/2]$, set $\psi_s(x)=s^{-1}\psi(x/s)$, and convolve $\psi_s$ with the indicator of $[-t-s/2,t+s/2]$. The fourth derivative is bounded by $\|\psi_s^{(4)}\|_1=s^{-4}\|\psi^{(4)}\|_1$.
+
+Lemma~\ref{lem:replacement} gives
+\[
+ \Pr(|f(X)|\le t)
+ \le\E\varphi(f(X))
+ \le\Pr(|f(G)|\le t+s)+C_1\,9^ddu\,s^{-4}.
+\]
+Orthogonality implies $\Var(f(G))=1$ and hence $\|f(G)\|_2\ge1$. Thus \eqref{eq:CW} yields
+\begin{equation}\label{eq:smooth-smallball}
+ \Pr(|f(X)|\le t)
+ \le C_{\mathrm{CW}}d\bigl(t^{1/d}+s^{1/d}\bigr)
+      +C_1\,9^ddu\,s^{-4},
+\end{equation}
+using $(t+s)^{1/d}\le t^{1/d}+s^{1/d}$.
+
+If $u\ge9^{-4d}$, then $u^{1/(8d)}\ge1/3$, and \eqref{eq:smallball} is trivial after taking $C_0\ge3$. Otherwise choose $s=u^{1/8}$. Then
+\[
+ s^{1/d}=u^{1/(8d)},\qquad
+ 9^du\,s^{-4}=9^du^{1/2}\le u^{1/4}\le u^{1/(8d)}.
+\]
+The middle inequality uses $u\le9^{-4d}$. Substitution in \eqref{eq:smooth-smallball}, followed by enlargement of an absolute constant, proves \eqref{eq:smallball}.
+\end{proof}
+
+\begin{remark}
+The estimate controls the full closed interval $[-t\sigma,t\sigma]$, including any atom at zero of $f(X)$. Its proof does not assume that the Boolean distribution is continuous. The nonzero mean of $f$ also causes no loss because the Gaussian comparison uses $\|f(G)\|_2\ge\sigma$.
+\end{remark}
+
+\section{Adaptive restrictions and a general PTF transfer inequality}
+
+The next proposition is formulated for any independent overwrite mask, so its dependence on the planted graph is completely isolated in $\alpha$ and $\delta$.
+
+\begin{proposition}[Uniform threshold transfer]\label{prop:transfer}
+Let $X$ be uniform on $\{-1,1\}^{E_n}$, let $I$ be independent of $X$, and let $Y$ be given by \eqref{eq:plant}. Suppose that
+\[
+ \alpha=\max_{e\in E_n}\Pr(e\in I),\qquad
+ \E[(g(Y)-g(X))^2]\le\delta^2\Var(g(X))
+ \quad\text{for every }\deg g\le d.
+\]
+For $h=h(d,\eta,\tau)$ from Lemma~\ref{lem:tree} and every $t>0$, every degree-at-most-$d$ polynomial $f$ satisfies
+\begin{align}
+ &\left|\Pr(f(Y)>0)-\Pr(f(X)>0)\right|\notag\\
+ &\quad\le h\alpha+\eta+
+ \max\left\{
+ C_0d\left[t^{1/d}+(d\tau)^{1/(8d)}\right]+\frac{\delta^2}{t^2},
+ \ (2+2\delta+\delta^2)\eta
+ \right\}.
+\end{align}
+The same right-hand side bounds the coupling probability that the two threshold indicators disagree.
+\end{proposition}
+\begin{proof}
+Construct the deterministic decision tree of Lemma~\ref{lem:tree} for $f$ and run it on $X$. Let $\rho$ be the leaf reached, $F_\rho\subseteq E_n$ the coordinates queried along the path, and $x^\rho$ their answers. The tree never queries an already fixed coordinate. Its actual restricted polynomial is
+\[
+ f_\rho(z)=f(x^\rho,z),\qquad z\in\{-1,1\}^{E_n\setminus F_\rho},
+\]
+and $|F_\rho|\le h$.
+
+\paragraph{Step 1: charge all changed queried coordinates separately.}
+The set $F_\rho$ is a function of $X$ alone. Conditional on $X$, independence of $I$ and a union bound give
+\begin{equation}\label{eq:query-hit}
+ \Pr(I\cap F_\rho\ne\varnothing)
+ \le\E\sum_{e\in F_\rho}\Pr(e\in I)
+ \le h\alpha.
+\end{equation}
+On the complementary event, planting changes none of the answers along the path reached by $X$. Induction along this path shows that $Y$ reaches the same leaf. In particular,
+\[
+ f(X)=f_\rho(X_{F_\rho^c}),\qquad
+ f(Y)=f_\rho(Y_{F_\rho^c})
+\]
+on that event. The first identity always holds. Consequently,
+\begin{align}\label{eq:leaf-decomposition}
+ &\Pr\bigl(\1_{\{f(X)>0\}}\ne\1_{\{f(Y)>0\}}\bigr)\notag\\
+ &\quad\le h\alpha+
+ \sum_\rho\Pr(X\text{ reaches }\rho)\notag\\
+ &\qquad\qquad\cdot
+ \Pr\!\left(
+  \1_{\{f_\rho(X_{F_\rho^c})>0\}}
+  \ne\1_{\{f_\rho(Y_{F_\rho^c})>0\}}
+  \,\middle|\,X\text{ reaches }\rho\right).
+\end{align}
+This is a pointwise event inclusion followed by averaging. No assumption on the distribution of leaves reached by $Y$ is required.
+
+\paragraph{Step 2: justify use of the coupling at each leaf.}
+For a fixed leaf $\rho$, the event that $X$ reaches it is exactly the cylinder event $X_{F_\rho}=x^\rho$. Indeed, those answers reproduce every deterministic choice and branch on the path. Conditional on this event, the unqueried coordinates are still independent uniform signs. The mask $I$ retains its original distribution and is independent of them, because the conditioning event depends only on $X$.
+
+View $f_\rho$ as a polynomial on all of $E_n$ that ignores the coordinates in $F_\rho$. Its degree is at most $d$. Adding arbitrary independent signs in the ignored coordinates does not change its values or its variance. Hence, conditional on the leaf,
+\[
+ \E\bigl[(f_\rho(Y_{F_\rho^c})-f_\rho(X_{F_\rho^c}))^2
+          \mid X\text{ reaches }\rho\bigr]
+ \le\delta^2\Var(f_\rho).
+\]
+Here the variance is with respect to uniform unqueried coordinates. We condition \emph{only} on the leaf reached by $X$, not additionally on $I\cap F_\rho=\varnothing$. Such extra conditioning would change the mask law. Its cost has already been paid in \eqref{eq:query-hit}.
+
+\paragraph{Step 3: control every type of leaf.}
+Unsuccessful leaves have total null probability at most $\eta$, and their conditional disagreement probability is at most one. Constant leaves contribute zero. Indeed, the uniform law has full support on the remaining cube, so a zero-variance restriction is constant at every point of that cube, including every overwritten input.
+
+At a nonconstant regular leaf, combine Lemma~\ref{lem:margin} and Lemma~\ref{lem:smallball}. The conditional disagreement probability is at most
+\[
+ C_0d\left[t^{1/d}+(d\tau)^{1/(8d)}\right]+\delta^2/t^2.
+\]
+At a mean-dominated leaf, write $\mu=\E f_\rho$ and
+$\sigma^2=\Var(f_\rho)\le\eta\mu^2$. If $\mu=0$, then $\sigma=0$, and the polynomial is constant zero. Otherwise the conditional coupling estimate and the triangle inequality in $L^2$ give
+\[
+ \|f_\rho(Y)-\mu\|_2
+ \le\|f_\rho(Y)-f_\rho(X)\|_2+\|f_\rho(X)-\mu\|_2
+ \le(1+\delta)\sigma.
+\]
+If either threshold indicator disagrees with $\1_{\{\mu>0\}}$, its polynomial value differs from $\mu$ by at least $|\mu|$. Therefore the conditional probability that the two indicators disagree is at most
+\[
+ \frac{\sigma^2}{\mu^2}
+ +\frac{(1+\delta)^2\sigma^2}{\mu^2}
+ \le(2+2\delta+\delta^2)\eta.
+\]
+If a leaf satisfies both successful criteria, either corresponding bound is valid. Averaging in \eqref{eq:leaf-decomposition} proves the assertion about coupling disagreement. Finally,
+\[
+ \left|\Pr(f(Y)>0)-\Pr(f(X)>0)\right|
+ \le\Pr\bigl(\1_{\{f(Y)>0\}}\ne\1_{\{f(X)>0\}}\bigr).
+\]
+The upper bound is independent of $f$, which proves the uniform assertion.
+\end{proof}
+
+\section{Parameter choices and completion of the graph theorems}
+
+\begin{proof}[Proof of Theorem~\ref{thm:embedding}]
+As noted earlier, $d=0$ or an edgeless template gives zero advantage. Work along the remaining indices with $d\ge1$. Fix $0<\eta<1/10$, independently of $n$, and use the absolute constant $C_0\ge1$ from Lemma~\ref{lem:smallball}. Set
+\[
+t=\left(\frac{\eta}{4C_0d}\right)^d,
+ \qquad
+ \tau=\frac1d\left(\frac{\eta}{4C_0d}\right)^{8d}.
+\]
+Then $0<\tau<1$ and
+\[
+ C_0d\left[t^{1/d}+(d\tau)^{1/(8d)}\right]=\eta/2.
+\]
+The logarithmic costs are
+\begin{align*}
+ \log t^{-2}&=2d\log d+O_\eta(d),\\
+ \log(1/\tau)&=\log d+8d\log d+O_\eta(d).
+\end{align*}
+Thus Lemma~\ref{lem:tree} implies
+\[
+\log h\le16d\log d+O_\eta(d+\log(d+1)).
+\]
+
+Write $c=c_\kappa$ and assume $1\le d\le c\log n/\log\log n$. Uniformly over this range,
+\[
+ d\log d\le(c+o(1))\log n,
+ \qquad d+\log(d+1)=o(\log n).
+\]
+These estimates include bounded $d$. In particular,
+\[
+h\le n^{16c+o(1)},\qquad t^{-2}\le n^{2c+o(1)}.
+\]
+
+For all sufficiently large $n$, we have $n\ge8d$. Lemma~\ref{lem:containment} and Corollary~\ref{cor:graph-coupling} apply with $r=2n^{-\kappa}$, since $r\ge n^{-1/2}$ and $B_dr=o(1)$. Take
+\[
+ \delta^2=A_dr^4=16A_dn^{-4\kappa}\le n^{-4\kappa+o(1)}.
+\]
+Also \eqref{eq:alpha-graph} gives
+\[
+ \alpha=\frac{2m}{n(n-1)}\le n^{-1-2\kappa+o(1)}.
+\]
+Consequently,
+\begin{align}
+ h\alpha&\le n^{16c-1-2\kappa+o(1)},\label{eq:query-asymptotic}\\
+ \delta^2/t^2&\le n^{-4\kappa+2c+o(1)}.\label{eq:margin-asymptotic}
+\end{align}
+For $c=\min\{\kappa,1/100\}$,
+\[
+ 16c-1-2\kappa\le-0.84-2\kappa<0,
+ \qquad -4\kappa+2c\le-2\kappa<0.
+\]
+Thus \eqref{eq:query-asymptotic} and \eqref{eq:margin-asymptotic} both tend to zero; also $\delta\to0$.
+
+Apply Proposition~\ref{prop:transfer}, and take the supremum over degree-at-most-$d$ polynomials. It follows that
+\[
+ \limsup_{n\to\infty}\Adv_{n,\Gamma_n}(d_n)
+ \le\eta+\max\{\eta/2,2\eta\}=3\eta.
+\]
+The estimate holds for every fixed $\eta>0$, so letting $\eta\downarrow0$ proves the conclusion. Every finite-$n$ bound depends on the template only through the common assumptions, and never on the coefficients of the test. Therefore the convergence is uniform as claimed. The equivalence with the tree condition was proved in Section~2.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main} and Corollary~\ref{cor:moments}]
+Lemma~\ref{lem:edge-degree} shows that \eqref{cond:C} implies \eqref{cond:E}. Lemma~\ref{lem:tree-moments} shows that \eqref{cond:M} implies \eqref{cond:E}. Apply Theorem~\ref{thm:embedding} in each case. The previously separated cases of constant tests and edgeless templates are immediate.
+\end{proof}
+
+\begin{remark}[Constants and degree range]
+The value $1/100$ is a convenient safe constant, not an optimization. The displayed proof permits any fixed $c>0$ with $2c<4\kappa$ and $16c<1+2\kappa$. Under the embedding condition, the polynomial-value coupling estimate also holds at degree $O(\log n)$, but the threshold transfer incurs factors $\exp(O_\eta(d\log d))$. The theorem proved here concerns the stated $\log n/\log\log n$ degree range. A small coupling error by itself is not a justification for a larger PTF degree range.
+\end{remark}
+
+\section{Examples and interpretation of the graph conditions}
+
+\subsection{Cliques, including the specified example}
+For the clique $\Gamma=K_K$,
+\[
+ 2|E(\Gamma)|=K(K-1)\le K^2,
+ \qquad \Delta_\Gamma=K-1.
+\]
+Hence any $K\le n^{1/2-\kappa}$ satisfies \eqref{cond:C}. In particular, if $0<\epsilon<1/10$ and
+\[
+ K=\lfloor n^{1/10-\epsilon}\rfloor,
+\]
+then we may take $\kappa=2/5+\epsilon\in(0,1/2)$. All polynomial threshold tests of degree at most $(1/100)\log n/\log\log n$ consequently have vanishing advantage. The exponent $1/10-\epsilon$ is the specified example; the theorem in fact includes cliques as large as $n^{1/2-\kappa}$ for every fixed $\kappa>0$. If $\epsilon\ge1/10$, the example has at most one vertex for large $n$ and is trivial.
+
+For any fixed $0<a<1/2$, take $K=\lfloor n^a\rfloor$ and $\kappa=1/2-a$. In this case unrestricted testing succeeds: the planted graph always contains a $K$-clique, whereas the null probability of this event is at most
+\[
+ \binom nK 2^{-\binom K2}
+ \le \exp\left(K\log\frac{en}{K}-\frac{K(K-1)}2\log2\right)
+ \longrightarrow0.
+\]
+Thus the clique specialization separates unrestricted testing from the PTF class in Theorem~\ref{thm:main}; its conclusion is not explained by information-theoretic indistinguishability.
+
+
+\subsection{Sparse templates with more than square-root many vertices}
+Let $\Gamma_n$ be a matching with $\lfloor n^{9/10}\rfloor$ edges. It uses at most $n$ vertices for all sufficiently large $n$. Its maximum degree is one and its edge count satisfies \eqref{cond:C} for every fixed $0<\kappa<1/20$. Thus Theorem~\ref{thm:main} applies even though the template has substantially more than $\sqrt n$ vertices. The same conclusion holds for any uniformly bounded-degree template with $O(n^{9/10})$ vertices, by absorbing the fixed multiplicative constants into the strict exponent slack.
+
+The matching example illustrates the range of admissible template supports. It does not exhibit a separation between unrestricted testing and PTF testing. In fact, if $\Gamma$ is a matching with $m=o(n)$ edges, even unrestricted tests have vanishing advantage. To see this, let $L=d\Pp_{\Gamma,n}/d\Qq_n$ and let $I,I'$ be independent planted masks. The likelihood identity $L(X)=\E_I\prod_{e\in I}(1+X_e)$ gives
+\[
+ \E_{\Qq_n}L^2
+ =\E_{I,I'}2^{|I\cap I'|}
+ =\sum_{k=0}^m\binom mk\frac{2^k(m)_k}{(n)_{2k}}
+ \le\left(1+\frac{2m}{(n-2m)^2}\right)^m
+ \le\exp\left(\frac{2m^2}{(n-2m)^2}\right)=1+o(1).
+\]
+Here $n>2m$ for all sufficiently large $n$, and the equality follows by expanding $2^{|I\cap I'|}=\sum_{U\subseteq I}\1_{\{U\subseteq I'\}}$ and applying the containment identity to $k$ disjoint edges. Cauchy--Schwarz then bounds the total variation distance by $\tfrac12(\E_{\Qq_n}L^2-1)^{1/2}=o(1)$.
+
+As another example, let $\Gamma_n$ be a disjoint union of $\lfloor n^{3/10}\rfloor$ cliques, each on $\lfloor n^{3/10}\rfloor$ vertices. Then
+\[
+ |V(\Gamma_n)|\asymp n^{3/5},\qquad
+ |E(\Gamma_n)|\asymp n^{9/10},\qquad
+ \Delta_{\Gamma_n}\asymp n^{3/10}.
+\]
+Again \eqref{cond:C} holds for every fixed $0<\kappa<1/20$ when $n$ is sufficiently large.
+Unlike the matching example, this example also separates unrestricted testing from the stated PTF class: the planted graph contains a clique of size $\lfloor n^{3/10}\rfloor$, while the preceding first-moment bound makes the null probability of such a clique tend to zero. Its template support has size $n^{3/5+o(1)}$, exceeding $\sqrt n$.
+
+
+\subsection{Why neither numerical scale should be omitted}
+The following observations explain the roles of edge count and maximum degree; they do not assert necessity at the exact boundary of \eqref{cond:C}.
+
+If $m/n\to\infty$, the total edge count $Z$ is already a successful affine-threshold statistic. With $M=\binom n2$,
+\[
+ Z\sim\operatorname{Bin}(M,1/2)\quad\text{under }\Qq_n,
+ \qquad
+ Z\sim m+\operatorname{Bin}(M-m,1/2)\quad\text{under }\Pp_{\Gamma,n}.
+\]
+The latter law does not depend on the chosen embedding because exactly $m$ distinct edges are forced. The means differ by $m/2$ and both variances are at most $M/4$. Chebyshev's inequality, with threshold $M/2+m/4$, bounds the sum of the two error probabilities by $8M/m^2=o(1)$.
+
+Edge count alone is not sufficient. Suppose some template vertex has degree at least $n^{1/2+\beta}$, for a fixed $\beta>0$. Define
+\[
+ Z_i=\frac1{\sqrt{n-1}}\sum_{j\ne i}(2A_{ij}-1),
+ \qquad T_r=\sum_{i=1}^n Z_i^{2r},
+\]
+where $r$ is a fixed positive integer with $2r\beta>1$. Under the null, expansion of the even moment shows $\E Z_i^{2r}\le C_r$: only index tuples in which each edge coordinate appears an even number of times contribute, and there are at most $(2r)!(n-1)^r$ such tuples. Hence $\E_{\Qq_n}T_r\le C_rn$.
+
+Conditional on the embedding, at the image $i$ of the high-degree vertex, $Z_i$ has mean at least $n^\beta$ and variance at most one. Chebyshev gives $Z_i\ge n^\beta/2$ with probability at least $1-4n^{-2\beta}$. Therefore
+\[
+ \Qq_n\bigl(T_r>2^{-2r-1}n^{2r\beta}\bigr)
+ \le 2^{2r+1}C_rn^{1-2r\beta}\to0,
+\]
+while the same event has probability tending to one under the planted law. This is a degree-$2r$ polynomial threshold test. For example, a star with $\lfloor n^{3/4}\rfloor$ leaves has $o(n)$ edges but is detected by such a degree-six test.
+
+Thus $m\approx n$ and $\Delta_\Gamma\approx\sqrt n$ mark genuine elementary detection scales. Our sufficient theorem keeps fixed polynomial slack below both scales. The tree-embedding and degree-moment formulations can be used when more information about the template is available.
+
+
+
+\begin{thebibliography}{9}
+\bibitem{CW}
+A.~Carbery and J.~Wright.
+\newblock Distributional and $L^q$ norm inequalities for polynomials over convex bodies in $\mathbb R^n$.
+\newblock \emph{Mathematical Research Letters} \textbf{8} (2001), 233--248.
+
+\bibitem{DSTW}
+I.~Diakonikolas, R.~A.~Servedio, L.-Y.~Tan, and A.~Wan.
+\newblock A regularity lemma, and low-weight approximators, for low-degree polynomial threshold functions.
+\newblock arXiv:0909.4727.
+
+\bibitem{DKLP}
+I.~Diakonikolas, D.~M.~Kane, S.~Liu, and T.~Pittas.
+\newblock PTF testing lower bounds for non-Gaussian component analysis.
+\newblock arXiv:2511.19398 (2025).
+
+\bibitem{HKKLMT}
+J.-T.~Hsieh, D.~M.~Kane, P.~K.~Kothari, J.~Li, S.~Mohanty, and S.~Tiegel.
+\newblock Rigorous implications of the low-degree heuristic.
+\newblock arXiv:2601.05850 (2026).
+
+\bibitem{YZZ}
+X.~Yu, I.~Zadik, and P.~Zhang.
+\newblock Counting stars is constant-degree optimal for detecting any planted subgraph.
+\newblock \emph{Mathematical Statistics and Learning} \textbf{8} (2025), no.~1/2, 105--164.
+
+
+\end{thebibliography}
+\end{document}
