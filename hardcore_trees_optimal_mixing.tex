@@ -1,0 +1,583 @@
+% Standalone proof developed from the supplied monotone-censoring and tree-band drafts.
+% All mathematical ingredients needed for the main theorem are proved below.
+% No companion .bib or custom style files are required.
+\documentclass[11pt,reqno]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,amsmath,amssymb,mathtools,mathrsfs}
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Optimal mixing for the hard-core model on arbitrary trees at small fugacity},pdfsubject={A finite-time entropy-contraction proof}}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\E}{\mathbb E}
+\newcommand{\Prob}{\mathbb P}
+\newcommand{\one}{\mathbf 1}
+\newcommand{\Law}{\mathcal L}
+\newcommand{\TV}{\mathrm{TV}}
+\DeclareMathOperator{\Ent}{Ent}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Pois}{Pois}
+\DeclareMathOperator{\Exp}{Exp}
+\numberwithin{equation}{section}
+\allowdisplaybreaks[1]
+\emergencystretch=1.5em
+\title{Optimal mixing for the hard-core model on arbitrary trees at small fugacity}
+\author{}
+\date{September 13, 2026}
+\begin{document}
+\begin{abstract}
+We prove that, for every fixed $0<\lambda\le 2^{-10}$, single-site heat-bath Glauber dynamics on every $n$-vertex tree mixes in $O_\lambda(n\log(n+1))$ discrete steps. More generally, its mixing time to accuracy $\varepsilon$ is at most $C_\lambda n(\log(n+1)+\log(1/\varepsilon))$.
+The main finite-time regularization estimate is that two units of continuous-time single-site dynamics on a star contract relative entropy by a fixed factor independent of the number of leaves. The estimate tensorizes over forests of stars and holds under every feasible boundary condition. We combine it with an entropy factorization over two consecutive depth levels. The resulting auxiliary chain uses exact fixed-time single-site kernels, rather than block heat-bath updates that must be approximated to high accuracy. Commutation parallelizes its updates into logarithmically many constant-duration rounds. Monotone censoring then transfers the estimate to the original dynamics.
+
+{\bf Notes.} This work was fully AI generated using GPT 6-Astra and the Codex harness, prompted by Zhangsong Li without any mathematical input.
+\end{abstract}
+\maketitle
+
+\section{Statement and the finite-time regularization principle}
+
+For a finite tree $T=(V,E)$, let $\Omega_T$ be its independent sets and write
+\[
+ \mu(\sigma)=\frac{\lambda^{|\sigma|}}{Z_{\lambda,T}},
+ \qquad \sigma\in\Omega_T.
+\]
+A single-site heat-bath update chooses a vertex, proposes occupation with probability $p=\lambda/(1+\lambda)$ and vacancy with probability $1-p$, and rejects an occupation proposal if a neighbor is occupied. We use rate-one clocks at the vertices in continuous time. For $A\subseteq V$, define
+\[
+ P_Af=\E_\mu[f\mid \sigma_{V\setminus A}],\qquad
+ L_A=\sum_{v\in A}(P_{\{v\}}-I),\qquad L=L_V.
+\]
+Thus $P_A$ is an exact block heat-bath kernel, whereas $e^{tL_A}$ runs the actual single-site dynamics in $A$ for time $t$, with the exterior frozen. The discrete-time transition matrix in the problem is
+\[
+ M=\frac1n\sum_{v\in V}P_{\{v\}},\qquad L=n(M-I).
+\]
+All logarithms are natural.
+
+\begin{theorem}\label{thm:main}
+Set $\lambda_0=2^{-10}$. For every fixed $0<\lambda\le\lambda_0$, there is $C_\lambda<\infty$ such that, for every $n\ge1$, every $n$-vertex tree and every $0<\varepsilon\le1/4$,
+\[
+ t_{\mathrm{mix}}^{\mathrm{disc}}(\varepsilon)
+ \le C_\lambda n\bigl(\log(n+1)+\log(1/\varepsilon)\bigr).
+\]
+In particular, the requested $C_\lambda n\log n$ bound holds for every $n\ge2$ at accuracy $1/4$. The continuous-time mixing time with rate one per vertex satisfies the same bound without the factor $n$.
+\end{theorem}
+
+The finite-time viewpoint is essential. The supplied monotone-censoring argument separates regularization from a dimension-free infinitesimal logarithmic Sobolev inequality. We use the same separation, but replace global self-return cores by a local event on which a star's center is vacant and its leaves evolve by product noise. This gives a \emph{multiplicative finite-time entropy contraction}, with no additive error.
+
+A direct fixed-density reduction to the product cube would not work. Indeed, under independent Bernoulli$(p)$ occupations on a path, the probability of being an independent set is at most $(1-p^2)^{\lfloor n/2\rfloor}$, by considering disjoint edges. Instead, we use blocks consisting of two depth levels, each of which is a forest of stars.
+
+There are three substantive estimates. First, two units of dynamics on any star forest lose a fixed fraction of the conditional entropy. Second, the total entropy is at most seven times the sum of the conditional entropies on depth bands. Third, the auxiliary band-update process can be implemented exactly in logarithmically many constant-duration rounds. In particular, there is no approximate simulation of block heat-bath updates and no per-round error that must be made inverse-polynomially small.
+
+\section{Entropy contraction for channels}
+
+For a probability measure $\rho$ and $f\ge0$, write
+\[
+ \Ent_\rho(f)=\rho(f\log f)-\rho(f)\log\rho(f).
+\]
+For probabilities $\nu\ll\rho$, write $D(\nu\Vert\rho)=\Ent_\rho(d\nu/d\rho)$. Kernels act on row measures from the right. The following elementary channel facts are included to keep the argument self-contained; see also \cite{Raginsky} for the general strong data-processing framework.
+
+\begin{lemma}[Tensorization]\label{lem:tensor}
+Let $K_i$ be a channel with reference input probability $\rho_i$, and suppose that, for every probability $\nu_i$,
+\[
+ D(\nu_iK_i\Vert\rho_iK_i)\le\eta D(\nu_i\Vert\rho_i),
+ \qquad 0\le\eta\le1.
+\]
+Then the same inequality holds for $K=\bigotimes_iK_i$ and $\rho=\bigotimes_i\rho_i$, including arbitrary correlated input probabilities $\nu$.
+\end{lemma}
+
+\begin{proof}
+Let $X=(X_1,\ldots,X_m)\sim\nu$, and generate $Y_i$ independently conditional on $X$ through $K_i$. The reference output is the product of $\rho_iK_i$. The relative-entropy chain rule and the one-coordinate hypothesis give
+\begin{align*}
+ D(\Law(Y)\Vert\rho K)
+ &=\sum_i\E D\bigl(\Law(Y_i\mid Y_{<i})\Vert\rho_iK_i\bigr)\\
+ &\le\eta\sum_i\E D\bigl(\Law(X_i\mid Y_{<i})\Vert\rho_i\bigr)\\
+ &\le\eta\sum_i\E D\bigl(\Law(X_i\mid X_{<i})\Vert\rho_i\bigr)
+ =\eta D(\nu\Vert\rho).
+\end{align*}
+For the second inequality, $Y_{<i}$ is obtained from $X_{<i}$ by a channel independent of $X_i$ conditional on $X_{<i}$. Thus the conditional law given $Y_{<i}$ is a mixture of the conditional laws given $X_{<i}$, and convexity of relative entropy applies. Zero-probability conditioning events can be omitted.
+\end{proof}
+
+\begin{lemma}[Bounded change of reference]\label{lem:perturb}
+Suppose a channel $K$ satisfies
+\[
+ D(\nu K\Vert\beta K)\le\eta D(\nu\Vert\beta)
+\]
+for every probability $\nu$, and let $\rho$ have the same support as $\beta$, with
+\[
+ 0<m\le\frac{d\rho}{d\beta}\le M<\infty.
+\]
+Then
+\begin{equation}\label{eq:perturb}
+ D(\nu K\Vert\rho K)
+ \le\left(1-\frac mM(1-\eta)\right)D(\nu\Vert\rho)
+\end{equation}
+for every probability $\nu$ on that support.
+\end{lemma}
+
+\begin{proof}
+Put $\Psi(u,v)=u\log(u/v)-u+v\ge0$, for $u\ge0$ and $v>0$. For an input probability $\sigma$, consider the joint probability $\sigma(x)K(x,y)$, and let
+\[
+ g_\sigma(y)=\E_{\sigma K}[f(X)\mid Y=y],\qquad
+ \Delta_{\sigma,K}(f)=\Ent_\sigma(f)-\Ent_{\sigma K}(g_\sigma),
+\]
+where in $\Ent_{\sigma K}(g_\sigma)$ the notation $\sigma K$ denotes the output marginal. The variational identities
+\begin{align*}
+ \Ent_\sigma(f)&=\inf_{a>0}\E_\sigma\Psi(f,a),\\
+ \Delta_{\sigma,K}(f)&=\inf_{h>0}\E_{\sigma(x)K(x,y)}\Psi(f(x),h(y))
+\end{align*}
+follow by minimizing over the constant $a$, or separately over $h(y)$. Values zero at the minimizer are handled by limits. Comparing the two input measures gives
+\[
+ \Ent_\rho(f)\le M\Ent_\beta(f),\qquad
+ \Delta_{\rho,K}(f)\ge m\Delta_{\beta,K}(f).
+\]
+The assumed contraction, extended to unnormalized $f$ by homogeneity, says that $\Delta_{\beta,K}(f)\ge(1-\eta)\Ent_\beta(f)$. Consequently
+\[
+ \Delta_{\rho,K}(f)\ge\frac mM(1-\eta)\Ent_\rho(f).
+\]
+Apply this to $f=d\nu/d\rho$ to obtain \eqref{eq:perturb}.
+\end{proof}
+
+\begin{corollary}[Product refresh]\label{cor:noise}
+Let $\beta$ be any product probability and $U_t$ its rate-one coordinate-refresh semigroup. Then
+\[
+ D(\nu U_t\Vert\beta)\le e^{-t}D(\nu\Vert\beta).
+\]
+If $m\le d\rho/d\beta\le M$, then
+\[
+ D(\nu U_t\Vert\rho U_t)
+ \le\left(1-\frac mM(1-e^{-t})\right)D(\nu\Vert\rho).
+\]
+\end{corollary}
+
+\begin{proof}
+In one coordinate, $\nu U_t=e^{-t}\nu+(1-e^{-t})\beta$, so the first claim follows from convexity of relative entropy. Lemma~\ref{lem:tensor} extends it to a product. The second claim is Lemma~\ref{lem:perturb}.
+\end{proof}
+
+\section{Finite-time entropy contraction on stars}
+
+For the remainder of the proof set
+\begin{equation}\label{eq:alpha}
+ p=\frac\lambda{1+\lambda},\qquad
+ a_\lambda=e^{-2p}\bigl(1-e^{-(1-p)}\bigr),\qquad
+ \alpha_\lambda=a_\lambda\frac{1-e^{-1}}{1+\lambda}>0.
+\end{equation}
+No smallness assumption on $\lambda$ is needed in this section.
+
+\begin{proposition}[A degree-independent fixed-time contraction]\label{prop:star}
+Let $\mu_\star$ be the hard-core measure with fugacity $\lambda>0$ on a star with any number of leaves, and let $S_t$ be its rate-one-per-vertex single-site semigroup. Then, for every probability $\nu$,
+\begin{equation}\label{eq:star-contraction}
+ D(\nu S_2\Vert\mu_\star)
+ \le(1-\alpha_\lambda)D(\nu\Vert\mu_\star).
+\end{equation}
+The same estimate holds for every forest of stars, with any feasible fixed boundary condition, using the same $\alpha_\lambda$.
+\end{proposition}
+
+\begin{proof}
+Write $C$ for the center occupation and $Y\in\{0,1\}^d$ for the leaf vector. Let
+\[
+ \beta=\operatorname{Bern}(p)^{\otimes d},\qquad
+ b=\beta(0^d)=(1+\lambda)^{-d},\qquad
+ q=\mu_\star(C=1)=\frac{\lambda b}{1+\lambda b}.
+\]
+The stationary measure has the exact decomposition
+\begin{equation}\label{eq:star-measure}
+ \mu_\star=(1-q)(\delta_0\otimes\beta)
+             +q\delta_{(1,0^d)}.
+\end{equation}
+
+Construct the center proposals as independent occupation and vacancy Poisson processes, of rates $p$ and $1-p$. Let $\mathcal E$ be the event that there is no center occupation proposal during $[0,2]$, and at least one center vacancy proposal during $[0,1]$. It is independent of the initial state and of all leaf randomness, and $\Prob(\mathcal E)=a_\lambda$.
+
+Conditional on $\mathcal E$, let $s\le1$ be the first center vacancy-proposal time. Its conditional distribution is also independent of the initial state. The center is certainly vacant during $[1,2]$. Let $H_s$ be the channel from the initial star state to the leaves at time $1$, conditional on this center event and this first vacancy time. If the initial center is vacant, the leaves evolve freely throughout $[0,1]$. If it is occupied, all leaves stay vacant until $s$ and then evolve freely. Hence the reference law at time $1$ is
+\[
+ \rho_s:=\mu_\star H_s=(1-q)\beta+q\,U_{1-s}(0^d,\cdot).
+\]
+Stationarity of $\beta$ for $U_t$ implies, pointwise,
+\[
+ b\,U_t(0^d,y)\le\beta(y).
+\]
+Using $q/b=(1-q)\lambda$, we obtain the dimension-free bounds
+\begin{equation}\label{eq:reference-bound}
+ 1-q\le\frac{\rho_s(y)}{\beta(y)}
+ \le(1-q)(1+\lambda).
+\end{equation}
+In particular, the ratio of the upper and lower bounds is at most $1+\lambda$, even when $q$ is exponentially small in $d$.
+
+During the last unit interval, the center remains vacant and the leaves undergo independent product refresh. For every input law $\nu$, Corollary~\ref{cor:noise}, followed by data processing through $H_s$, gives
+\begin{align*}
+ D(\nu H_sU_1\Vert\mu_\star H_sU_1)
+ &\le\left(1-\frac{1-e^{-1}}{1+\lambda}\right)
+       D(\nu H_s\Vert\rho_s)\\
+ &\le\left(1-\frac{1-e^{-1}}{1+\lambda}\right)
+       D(\nu\Vert\mu_\star).
+\end{align*}
+Adjoining the deterministic final center state does not change relative entropy. Averaging over $s$ by joint convexity proves the same contraction for the conditional transition kernel $K_{\mathcal E}$.
+
+Let $K_{\mathcal E^c}$ denote the transition kernel conditional on the complementary center event. This is a channel independent of the input distribution, so ordinary data processing gives
+\[
+ D(\nu K_{\mathcal E^c}\Vert\mu_\star K_{\mathcal E^c})
+ \le D(\nu\Vert\mu_\star).
+\]
+Since
+\[
+ S_2=a_\lambda K_{\mathcal E}+(1-a_\lambda)K_{\mathcal E^c},
+ \qquad \mu_\star S_2=\mu_\star,
+\]
+joint convexity now yields
+\begin{align*}
+ D(\nu S_2\Vert\mu_\star)
+ &\le a_\lambda D(\nu K_{\mathcal E}\Vert\mu_\star K_{\mathcal E})
+ +(1-a_\lambda)D(\nu K_{\mathcal E^c}\Vert\mu_\star K_{\mathcal E^c})\\
+ &\le(1-\alpha_\lambda)D(\nu\Vert\mu_\star).
+\end{align*}
+The reference measures on the two branches need not be stationary; they are kept separately until the last joint-convexity step.
+
+The measure and the dynamics on a forest of stars are products, so Lemma~\ref{lem:tensor} proves the forest assertion. A feasible occupied boundary vertex only forces its adjacent interior vertices to be vacant. Deleting those forced-vacant vertices leaves smaller stars and isolated vertices. An isolated vertex contracts entropy by $e^{-2}$ in two time units, which is at most $1-\alpha_\lambda$ because $\alpha_\lambda\le1-e^{-1}$. Deterministic components have zero entropy. These observations prove the assertion with boundary conditions as well.
+\end{proof}
+
+\begin{remark}[What the estimate does not assert]\label{rem:finite}
+Proposition~\ref{prop:star} is an estimate at the fixed time $2$, not an infinitesimal entropy inequality. For example, on a large star the center-occupied state has stationary mass $q=\lambda/((1+\lambda)^d+\lambda)$ and leaves that state at rate $1/(1+\lambda)$. For $g=\one_{\{C=1\}}/\sqrt q$,
+\[
+ \Ent_{\mu_\star}(g^2)=\log(1/q),\qquad
+ -\mu_\star(gL g)=\frac1{1+\lambda}.
+\]
+Thus a dimension-free classical logarithmic Sobolev inequality is unavailable. Also, the proof never waits for every leaf to update. It only uses a fixed fraction of product-noise entropy contraction during the vacant-center window.
+\end{remark}
+
+\section{A two-level tree estimate}
+
+We next prove an entropy factorization adapted to depth bands. This is a direct, level-grouped version of the tree martingale method; the broader connection between spatial mixing and functional inequalities on trees is developed in \cite{MSW}.
+
+\begin{lemma}\label{lem:hyper}
+Consider a finite rooted tree with vertex fugacities in $(0,\lambda_0]$. Let $X$ be the root occupation, let $Y$ collect the children, and let $Z$ collect the vertices at distance at least two from the root. For every real $g$,
+\begin{equation}\label{eq:hyper}
+ \bigl\|\E[g(X)\mid Z]\bigr\|_8\le\|g(X)\|_2.
+\end{equation}
+The assertion also holds when the root is forced vacant, and it tensorizes over a product of such rooted-tree measures.
+\end{lemma}
+
+\begin{proof}
+The forced-vacant case is immediate. Otherwise let $a\le\lambda_0$ be the root fugacity. Conditional on $X=0$, the child subtrees are independent. For the $i$th child, write $Y_i$ for its occupation and $Z_i$ for its strict descendants, and put
+\[
+ q_i=\Prob(Y_i=1\mid X=0),\qquad
+ Q_i(Z_i)=\Prob(Y_i=1\mid Z_i,X=0).
+\]
+With $p_0=\lambda_0/(1+\lambda_0)$, the heat-bath conditional law gives $0\le Q_i\le p_0$. Let $\nu_i$ be the law of $Z_i$ conditional on $X=0$, and define
+\[
+ \nu=\bigotimes_i\nu_i,\qquad
+ U=\prod_i(1-Q_i),\qquad k=\prod_i(1-q_i).
+\]
+Then $\nu_i(Q_i)=q_i$ and $\nu(U)=k$. Bayes' rule gives
+\begin{equation}\label{eq:posterior}
+ q:=\Prob(X=1)=\frac{ak}{1+ak},\qquad
+ R(Z):=\Prob(X=1\mid Z)=\frac{aU}{1+aU},\qquad
+ \frac{d\mu_Z}{d\nu}=(1-q)(1+aU).
+\end{equation}
+To verify these identities, the likelihood ratio of $Z_i$ under $Y_i=0$ relative to its law under $X=0$ is $(1-Q_i)/(1-q_i)$, and $X=1$ forces every $Y_i$ to be zero.
+
+For $0\le x\le p_0$, convexity on $[0,p_0]$ and the second-order Taylor bound imply
+\[
+ (1-x)^8\le1-\frac{1-(1-p_0)^8}{p_0}x\le1-7x,
+\]
+because $p_0\le1/28$ and $1-(1-p_0)^8\ge8p_0-28p_0^2\ge7p_0$. Consequently
+\[
+ \nu_i[(1-Q_i)^8]\le1-7q_i\le(1-q_i)^7,
+ \qquad \nu(U^8)\le k^7.
+\]
+By \eqref{eq:posterior},
+\[
+ \E_{\mu_Z}R^8
+ =(1-q)a^8\E_\nu\frac{U^8}{(1+aU)^7}\le a^8k^7.
+\]
+Set $\phi(X)=(X-q)/\sqrt{q(1-q)}$ and $h(Z)=\E[\phi(X)\mid Z]$. Then $\E h=0$ and
+\begin{align*}
+ \|h\|_8
+ &\le\frac{ak^{7/8}+q}{\sqrt{q(1-q)}}\\
+ &=\sqrt a\bigl[(1+ak)k^{3/8}+\sqrt k\bigr]
+ \le(2+a)\sqrt a\le3\sqrt{\lambda_0}=\frac3{32}<\frac18.
+\end{align*}
+Every function of $X$ is $g=A+B\phi$. By homogeneity suppose $A^2+B^2=1$. Expanding the eighth power and bounding all terms of degree at least two by their absolute values gives
+\begin{align*}
+ \E(A+Bh)^8
+ &\le A^8+B^2\sum_{j=2}^8\binom8j8^{-j}\\
+ &=A^8+B^2\bigl[(9/8)^8-2\bigr]
+ \le A^8+B^2\le1.
+\end{align*}
+Here $|A|^{8-j}|B|^j\le B^2$ for $j\ge2$, and $(9/8)^8-2<1$. This proves \eqref{eq:hyper}.
+
+For tensorization, let $K_1,K_2$ be two of the conditional-expectation operators. The one-component bounds and the mixed-norm form of Minkowski's inequality yield
+\begin{align*}
+ \|(K_1\otimes K_2)g\|_{L^8(Z_1,Z_2)}
+ &\le\|K_1g\|_{L^8(Z_1;L^2(X_2))}\\
+ &\le\|K_1g\|_{L^2(X_2;L^8(Z_1))}
+ \le\|g\|_{L^2(X_1,X_2)}.
+\end{align*}
+Iteration proves the result for every finite product.
+\end{proof}
+
+For $A\subseteq V$, use the notation
+\[
+ H_A(f)=\Ent_\mu(f)-\Ent_\mu(P_Af),\qquad f\ge0.
+\]
+This is the mean conditional entropy in $A$ given its complement.
+
+\begin{lemma}[Local entropy estimate]\label{lem:local}
+In the setting of Lemma~\ref{lem:hyper}, including a product of rooted trees, let $X$ denote the root vector, let $W$ be its set of vertices, and let $B$ consist of those roots and their children. Then
+\begin{equation}\label{eq:local}
+ \Ent_\mu\bigl(\E[f\mid X]\bigr)
+ \le\frac73 H_B(f)+\frac13 H_{V\setminus W}(f),\qquad f\ge0.
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Normalize $\mu(f)=1$. Write $D=\Ent_\mu(f)$, and let $D_X,D_Z$ be the relative entropies of the $X$ and $Z$ marginals of $f\mu$ relative to the corresponding marginals of $\mu$. Lemma~\ref{lem:hyper} and H\"older's inequality give
+\[
+ \E_\mu[a(X)b(Z)]\le\|a\|_2\|b\|_{8/7}.
+\]
+For the marginal density ratios $r_X,r_Z$, substitute $a=r_X^{1/2}$ and $b=r_Z^{7/8}$. Their indicated norms equal one, so
+\[
+ \E_\mu\exp\left\{\frac12\log r_X+\frac78\log r_Z\right\}\le1.
+\]
+The variational formula for relative entropy implies
+\[
+ \frac12D_X+\frac78D_Z\le D.
+\]
+Using $D_Z=D-H_B(f)$ and $D=D_X+H_{V\setminus W}(f)$ gives \eqref{eq:local}. Zeros in marginal density ratios are handled by approximation, and homogeneity removes the normalization.
+\end{proof}
+
+\section{Entropy factorization over depth bands}
+
+Root $T$ arbitrarily, let $V_j$ be the vertices at depth $j$, and let $h$ be the maximum depth. Set $V_j=\varnothing$ for $j>h$, and define
+\[
+ B_j=V_j\cup V_{j+1},\qquad F_j=\bigcup_{i\ge j}V_i,
+ \qquad M_jf=P_{F_j}f.
+\]
+Thus $M_0f=\mu(f)$ and $M_jf=f$ for $j\ge h+1$. Every $B_j$ induces a forest of stars.
+
+\begin{proposition}[Band entropy factorization]\label{prop:bands}
+For $0<\lambda\le\lambda_0$ and every $f\ge0$,
+\begin{equation}\label{eq:bands}
+ \Ent_\mu(f)\le7\sum_{j=0}^h H_{B_j}(f).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Put $b_j(f)=\Ent_\mu(M_{j+1}f)-\Ent_\mu(M_jf)$ for $0\le j\le h$ and $b_j(f)=0$ for $j>h$. Conditional Jensen and telescoping give
+\[
+ b_j(f)\ge0,\qquad \sum_{j=0}^h b_j(f)=\Ent_\mu(f).
+\]
+Condition on all levels above $V_j$. The remaining law is a product of rooted-tree measures, whose roots are the vertices of $V_j$. A root with an occupied parent is forced vacant. Apply Lemma~\ref{lem:local} to $g=M_{j+3}f$ in this conditional forest and then average over the conditioning. The tower property identifies the left side as $b_j(f)$, giving
+\[
+ b_j(f)\le\frac73 H_{B_j}(M_{j+3}f)
+             +\frac13 H_{F_{j+1}}(M_{j+3}f).
+\]
+The sets $B_j$ and $F_{j+3}$ are disjoint and have no edge between them. Conditional on the remaining vertices, their configurations are independent. Convexity of conditional entropy therefore gives
+\[
+ H_{B_j}(M_{j+3}f)\le H_{B_j}(f).
+\]
+The nested conditional expectations give the exact identity
+\begin{align*}
+ H_{F_{j+1}}(M_{j+3}f)
+ &=\Ent_\mu(M_{j+3}f)-\Ent_\mu(M_{j+1}f)\\
+ &=b_{j+1}(f)+b_{j+2}(f).
+\end{align*}
+Consequently
+\[
+ b_j(f)\le\frac73 H_{B_j}(f)
+       +\frac13\bigl(b_{j+1}(f)+b_{j+2}(f)\bigr).
+\]
+Summing in $j$ and moving the resulting $(2/3)\Ent_\mu(f)$ to the left proves \eqref{eq:bands}.
+\end{proof}
+
+\begin{remark}
+The proof works directly with the entire depth bands. It does not replace a sum of individual-star conditional entropies by a band entropy, an inequality that would have the wrong direction for general densities.
+\end{remark}
+
+\section{Exact finite-time band kernels}
+
+For every depth band define
+\begin{equation}\label{eq:Kj}
+ K_j=e^{2L_{B_j}}.
+\end{equation}
+This is two units of actual single-site evolution in $B_j$, not $P_{B_j}$. It is reversible with respect to $\mu$ and preserves the exterior configuration.
+
+\begin{lemma}\label{lem:band-drop}
+For every $f\ge0$,
+\begin{equation}\label{eq:band-drop}
+ \Ent_\mu(f)-\Ent_\mu(K_jf)\ge\alpha_\lambda H_{B_j}(f).
+\end{equation}
+\end{lemma}
+
+\begin{proof}
+Condition on the exterior of $B_j$. The conditional measure is the hard-core measure on a forest of stars with feasible boundary condition. Proposition~\ref{prop:star}, applied to the normalized conditional density and then extended by homogeneity, contracts its entropy by $1-\alpha_\lambda$. Average over the exterior. The conditional mean of $f$ is unchanged by $K_j$, so the entropy chain rule gives precisely \eqref{eq:band-drop}.
+\end{proof}
+
+Let the auxiliary continuous-time chain have generator
+\[
+ \mathscr L=\sum_{j=0}^h(K_j-I).
+\]
+Its graphical construction has a rate-one Poisson clock for each band and applies $K_j$ at a ring of that band. These clocks describe \emph{virtual} time. Every $K_j$ preserves $\mu$ and is self-adjoint on $L^2(\mu)$, so the same is true of the auxiliary semigroup.
+
+\begin{proposition}[Virtual-time entropy decay]\label{prop:virtual}
+If $f_t$ is the density of this auxiliary chain relative to $\mu$, then
+\begin{equation}\label{eq:virtual-decay}
+ \Ent_\mu(f_t)\le e^{-\alpha_\lambda t/7}\Ent_\mu(f_0).
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+For a stationary Markov kernel $K$ and positive $f$ of mean one,
+\[
+ \mu[(f-Kf)\log f]\ge\Ent_\mu(f)-\Ent_\mu(Kf),
+\]
+because the difference between the left and right sides is $D((Kf)\mu\Vert f\mu)\ge0$. Therefore Lemma~\ref{lem:band-drop} and Proposition~\ref{prop:bands} imply
+\begin{align*}
+ -\frac{d}{dt}\Ent_\mu(f_t)
+ &=\sum_j\mu[(f_t-K_jf_t)\log f_t]\\
+ &\ge\sum_j\bigl(\Ent_\mu(f_t)-\Ent_\mu(K_jf_t)\bigr)\\
+ &\ge\alpha_\lambda\sum_jH_{B_j}(f_t)
+ \ge\frac{\alpha_\lambda}{7}\Ent_\mu(f_t).
+\end{align*}
+Integrating proves the result. Approximation by positive densities handles arbitrary initial laws.
+\end{proof}
+
+For $\lambda<1$, put $c_\lambda=\log((1+\lambda)/\lambda)$. Since $Z_{\lambda,T}\le(1+\lambda)^n$ and $\lambda^{|\sigma|}\ge\lambda^n$,
+\begin{equation}\label{eq:initial-entropy}
+ \mu(\sigma)\ge\left(\frac\lambda{1+\lambda}\right)^n,
+ \qquad \Ent_\mu\left(\frac{\one_{\{\sigma\}}}{\mu(\sigma)}\right)
+ \le c_\lambda n.
+\end{equation}
+Thus the auxiliary chain mixes to any accuracy $\delta$ after virtual time
+\begin{equation}\label{eq:tstar}
+ t_* =\frac7{\alpha_\lambda}\log\frac{c_\lambda n}{2\delta^2},
+\end{equation}
+provided the displayed logarithm is positive. Indeed, \eqref{eq:virtual-decay}, \eqref{eq:initial-entropy} and Pinsker's inequality bound its total-variation distance by $\delta$. The parameters chosen below always make this logarithm positive.
+
+\section{Parallel implementation without block approximation}
+
+\begin{lemma}[Depth of a band-update word]\label{lem:parallel}
+Run the independent rate-one band clocks for virtual time $t$. Their update word can be rearranged, without changing its transition kernel, into $D$ rounds. Every round consists of bands whose indices have pairwise distance at least three, and its kernel equals $e^{2L_A}$, where $A$ is the union of those bands. For every integer $r\ge1$,
+\begin{equation}\label{eq:depth-tail}
+ \Prob(D\ge r)\le n\left(\frac{5et}{r}\right)^r.
+\end{equation}
+The round schedule depends only on the virtual Poisson clocks, not on any spin values or any single-site proposal randomness.
+\end{lemma}
+
+\begin{proof}
+If $|i-j|\ge3$, then $B_i,B_j$ are disjoint and nonadjacent. All single-site kernels in the two sets commute, hence so do $L_{B_i},L_{B_j}$ and $K_i,K_j$. Moreover,
+\[
+ K_iK_j=e^{2(L_{B_i}+L_{B_j})}=e^{2L_{B_i\cup B_j}}.
+\]
+
+Construct a directed acyclic graph on the virtual clock events: draw an edge from each earlier event to each later event whose label differs by at most two. Assign to an event the maximum number of vertices in a directed path ending there. Events with the same assigned number form one round. Any two labels in a round differ by at least three. Sorting by round number is a topological ordering and can be achieved by interchanging only commuting kernels. This proves the kernel identity and the exact implementation assertion.
+
+If $D\ge r$, there is a sequence of $r$ chronologically ordered clock events with labels $j_1,\ldots,j_r$ satisfying $|j_{k+1}-j_k|\le2$. There are at most $(h+1)5^{r-1}\le n5^{r-1}$ possible label sequences. For any fixed sequence, the expected number of ordered event tuples is $t^r/r!$, also when labels repeat, by the factorial moment formula for Poisson processes. A union bound and $r!\ge(r/e)^r$ prove \eqref{eq:depth-tail}.
+\end{proof}
+
+Fix $0<\varepsilon\le1/4$, and choose
+\begin{equation}\label{eq:parameters}
+ \delta=\frac{\varepsilon}{8n},\qquad
+ t_* =\frac7{\alpha_\lambda}\log\frac{c_\lambda n}{2\delta^2},\qquad
+ R=\left\lceil10et_*+10\log\frac{8n^2}{\varepsilon}+10\right\rceil,
+ \qquad S=2R.
+\end{equation}
+By \eqref{eq:depth-tail} and $R\ge10et_*$,
+\[
+ \Prob(D>R)\le\Prob(D\ge R)\le n2^{-R}\le\delta.
+\]
+Here $R\ge10\log(n/\delta)$, and $10\log2>1$.
+
+Sample the virtual clocks on $[0,t_*]$ independently of all randomness of the actual single-site chain. Retain only the first $R$ rounds of the resulting schedule, appending empty rounds if there are fewer. Denote the round unions by $A_1,\ldots,A_R$. During the $r$th real interval of length $2$, censor all updates outside $A_r$ and perform the ordinary single-site updates inside $A_r$.
+
+By Lemma~\ref{lem:parallel}, on $\{D\le R\}$ this censored chain implements \emph{exactly} the conditional transition kernel of the auxiliary chain at virtual time $t_*$. On the complementary event both constructions are valid probability kernels. Therefore their unconditional laws differ by at most $\Prob(D>R)\le\delta$, uniformly over the initial state. The auxiliary-chain estimate gives
+\begin{equation}\label{eq:censored-mixing}
+ \sup_\sigma\|\Law_\sigma(X_S^{\mathrm{cens}})-\mu\|_{\TV}
+ \le2\delta.
+\end{equation}
+There is no other approximation error. In particular,
+\begin{equation}\label{eq:real-time}
+ S=O_\lambda\bigl(\log(n+1)+\log(1/\varepsilon)\bigr).
+\end{equation}
+
+\section{Monotone censoring and the original chain}
+
+We include the required censoring argument, rather than appealing to a comparison of spectral gaps. It is the finite-state binary version of the Peres--Winkler censoring principle \cite{PW}.
+
+Let $V=V_{\mathrm e}\sqcup V_{\mathrm o}$ be the bipartition and transform the occupations by
+\[
+ \xi_v=\sigma_v\quad(v\in V_{\mathrm e}),\qquad
+ \xi_v=1-\sigma_v\quad(v\in V_{\mathrm o}).
+\]
+On an even--odd edge the hard-core constraint becomes $\xi_u\le\xi_v$. The transformed state space has a bottom $\mathbf0$ and a top $\mathbf1$, corresponding respectively to occupation of all odd or all even vertices. Every single-site kernel is monotone in this order. For an even vertex its conditional probability of $\xi_v=1$ is $p$ if all neighboring transformed spins equal one and zero otherwise. For an odd vertex it is $1$ if any neighboring transformed spin equals one and $1-p$ otherwise. Both probabilities are increasing functions of the neighboring configuration.
+
+\begin{lemma}[Censoring from the extrema]\label{lem:censor}
+Starting from the top or from the bottom, deleting updates according to a random schedule independent of the single-site proposal randomness cannot improve total-variation convergence to $\mu$.
+\end{lemma}
+
+\begin{proof}
+It suffices first to fix a finite coordinate-update word and a subsequence. Suppose the current density $f$ relative to $\mu$ is increasing. Reversibility implies that its density after updating $v$ is $P_{\{v\}}f$, which remains increasing by monotonicity of the kernel. For every increasing $g$,
+\[
+ \mu(fg)-\mu[(P_{\{v\}}f)g]
+ =\mu\!\left[\Cov\bigl(f,g\mid\sigma_{V\setminus\{v\}}\bigr)\right]\ge0.
+\]
+The covariance is nonnegative because each conditional fiber has at most two ordered states. Thus an update decreases this law in stochastic order; applying subsequent monotone kernels preserves the order comparison.
+
+The top point mass has increasing density. Repeatedly inserting the missing updates shows that the censored law $\beta$ stochastically dominates the uncensored law $\alpha$, and both have increasing densities. The set $A=\{d\alpha/d\mu\ge1\}$ is increasing, so
+\[
+ \|\alpha-\mu\|_{\TV}=\alpha(A)-\mu(A)
+ \le\beta(A)-\mu(A)\le\|\beta-\mu\|_{\TV}.
+\]
+For continuous-time and random schedules, condition on the independent schedule and the coordinate clocks, apply the finite-word comparison, and average. Stochastic order and increasing densities are preserved under mixtures, so the same total-variation argument applies to the averaged laws. Reversing the order gives the result from the bottom.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}]
+Use the independent censoring schedule constructed in the preceding section. By \eqref{eq:censored-mixing} and Lemma~\ref{lem:censor}, the uncensored chain at time $S$ from each extremal state is within $2\delta$ of $\mu$.
+
+Couple the uncensored processes $X_t^+,X_t^-$ from the two extrema by common rate-one clocks and monotone proposal uniforms in transformed coordinates. Then $X_t^+\ge X_t^-$ at all times. At a fixed vertex, the disagreement probability equals the difference of the two one-site means, hence is at most the sum of the two total-variation distances to $\mu$, or $4\delta$. Therefore
+\begin{equation}\label{eq:coalescence}
+ \Prob(X_S^+\ne X_S^-)\le4n\delta=\varepsilon/2.
+\end{equation}
+Every other initial configuration, including an initially stationary one, can be coupled between these extrema. Their coalescence is permanent. This proves the continuous-time mixing bound, with error at most $\varepsilon/2$, using \eqref{eq:real-time}.
+
+For the discrete-time statement, superpose all vertex clocks. The total count $N_S$ has law $\Pois(nS)$, and the successive coordinate marks are uniform vertices. The embedded chain is exactly the discrete-time heat-bath chain in the problem. Set $m=\lceil2nS\rceil$. If the extremal coupling has coalesced by time $S$ and $N_S\le m$, the embedded chains have coalesced by step $m$. Thus
+\[
+ \sup_\sigma\|M^m(\sigma,\cdot)-\mu\|_{\TV}
+ \le\varepsilon/2+\Prob(N_S>m).
+\]
+Using $\E 2^{N_S}=e^{nS}$ gives
+\[
+ \Prob(N_S>m)\le\exp\bigl(-(2\log2-1)nS\bigr)\le\varepsilon/2.
+\]
+For the last inequality, \eqref{eq:parameters} gives $nS\ge20\log(8n^2/\varepsilon)$, and $20(2\log2-1)>1$. This is a pathwise union bound: no independence between coalescence and $N_S$ is assumed. Finally, $m\le2nS+1$ and \eqref{eq:real-time} give the asserted order. The argument also covers $n=1$; the expression $\log(n+1)$ avoids the zero in $\log n$ at that size.
+\end{proof}
+
+\section{How this removes the extra logarithms}
+
+The transferable part of the monotone-censoring draft is the decision to prove finite-time regularization directly, instead of demanding a uniform infinitesimal logarithmic Sobolev inequality. Here the local vacant-center window replaces the global self-return-core construction. Its occurrence has fixed positive probability, and the reference law of the leaves after the first unit interval is a bounded perturbation of a product measure, by \eqref{eq:reference-bound}. Relative-entropy contraction then supplies a multiplicative estimate without discarding any mass.
+
+The crucial implementation choice is \eqref{eq:Kj}: every virtual band update is already two units of single-site dynamics. There is no need to run a star forest to inverse-polynomial total-variation accuracy before moving to the next round. Although the virtual process makes $O(n\log n)$ individual band calls, the band interaction graph has bounded range. Its dependency depth is only $O(\log n)$ with the required high probability. Each parallel round costs exactly two real time units.
+
+Four distinctions keep the argument valid. The stationary reference is not retained after conditioning on a center-clock event; each branch has its own reference image, and stationarity is used only after the branches are recombined. Channel contraction tensorizes for arbitrary correlated input distributions. The band entropy inequality is proved for whole bands, not by grouping individual-star entropy terms. Finally, the actual censoring schedule depends only on auxiliary clocks, never on the spin configuration or proposal outcomes. These points remove, respectively, a conditioning error, an independence assumption, a wrong-way entropy inequality, and a state-dependent-censoring issue.
+
+\begin{thebibliography}{9}
+\bibitem{MSW}
+F.~Martinelli, A.~Sinclair, and D.~Weitz,
+\emph{Glauber dynamics on trees: Boundary conditions and mixing time},
+Communications in Mathematical Physics \textbf{250} (2004), 301--334.
+\href{https://arxiv.org/abs/math/0307336}{arXiv:math/0307336}.
+
+\bibitem{PW}
+Y.~Peres and P.~Winkler,
+\emph{Can extra updates delay mixing?},
+Communications in Mathematical Physics \textbf{323} (2013), 1007--1016.
+\href{https://arxiv.org/abs/1112.0603}{arXiv:1112.0603}.
+
+\bibitem{Raginsky}
+M.~Raginsky,
+\emph{Strong data processing inequalities and $\Phi$-Sobolev inequalities for discrete channels},
+\href{https://arxiv.org/abs/1411.3575}{arXiv:1411.3575}, version 4 (2016).
+\end{thebibliography}
+\end{document}
